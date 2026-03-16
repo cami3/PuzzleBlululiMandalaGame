@@ -10,6 +10,18 @@ st.set_page_config(page_title="Blululi Puzzle Studio", page_icon="🧩", layout=
 st.markdown(
     """
     <style>
+    /* Allarga il contenuto al massimo e toglie i margini di default */
+.main .block-container {
+    padding-top: 0rem !important;
+    padding-bottom: 0rem !important;
+    padding-left: 0.5rem !important; /* Un minimo di respiro sui bordi */
+    padding-right: 0.5rem !important;
+}
+
+/* Rimuove lo spazio extra in cima */
+[data-testid="stAppViewBlockContainer"] {
+    padding: 0 !important;
+    }
       /* 1. Nasconde Header, Toolbar e Footer ufficiali */
       [data-testid="stHeader"], [data-testid="stToolbar"], footer {
         display: none !important;
