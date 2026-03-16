@@ -730,7 +730,7 @@ components_html = f"""
                 </div>
 
                 <div class="overlay-actions">
-                  <a id="shopBtn" target="_blank" rel="noopener noreferrer" class="cta-link btn-success">Shop This Design</a>
+                  <a id="shopBtn" rel="noopener noreferrer" class="cta-link btn-success">Shop This Design</a>
                   <button class="btn-primary" id="againBtn">Play Again</button>
                   <button class="btn-secondary" id="closeOverlayBtn">Close</button>
                 </div>
@@ -864,7 +864,9 @@ function setPreview() {{
   currentName = images[idx]?.name || "Mandala";
   previewImg.src = currentImage;
   previewName.textContent = currentName;
-  shopBtn.href = safeProductUrl(idx);
+  shopBtn.onclick = () => {{
+  window.location.href = safeProductUrl(idx)
+}}
 }}
 
 function resetStats() {{
