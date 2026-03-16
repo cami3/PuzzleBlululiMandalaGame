@@ -657,14 +657,29 @@ components_html = f"""
     .board-head {{ flex-direction: column; }}
   }}
 
-  @media (max-width: 560px) {{
-    body {{ padding: 0; }}
-    .shell {{ padding: 6px; }}
-    #board {{ width: 100%; max-width: none; border-radius: 18px; }}
-    .tile {{ border-radius: 3px; }}
-    .kpis, .status-row, .overlay-stats {{ grid-template-columns: 1fr; }}
-    .overlay-box {{ padding: 20px; }}
-    .app {{ border-radius: 0; }}
+ @media (max-width: 560px) {{
+    body {{ padding: 0 !important; }}
+    /* Rimuove i margini esterni dell'app e il violetto di sfondo */
+    .app {{ 
+        border-radius: 0; 
+        padding: 5px !important; 
+        background: transparent; 
+        box-shadow: none;
+        border: none;
+    }}
+    .shell {{ padding: 0; gap: 8px; }}
+    /* Riduce il padding interno delle card (il bianco intorno al puzzle) */
+    .card.pad, .board-card {{ 
+        padding: 10px !important; 
+        border-radius: 12px;
+    }}
+    #board {{ 
+        width: 100%; 
+        max-width: none; 
+        border-radius: 12px; 
+    }}
+    .kpis, .status-row, .overlay-stats {{ grid-template-columns: 1fr 1fr; }} /* Mantieni 2 colonne per non allungare troppo */
+    .overlay-box {{ padding: 15px; }}
   }}
 </style>
 </head>
