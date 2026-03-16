@@ -6,40 +6,40 @@ from pathlib import Path
 import streamlit as st
 from PIL import Image
 
-st.set_page_config(page_title="Blululi Puzzle Studio", page_icon="🧩", layout="wide")
-st.markdown(
-    """
+# 1. Configurazione pagina con margini minimi
+st.set_page_config(page_title="Blululi Puzzle", layout="wide", initial_sidebar_state="collapsed")
+
+# 2. CSS per eliminare margini esterni e proteggere la visualizzazione mobile
+st.markdown("""
     <style>
-      /* 1. Nasconde Header, Toolbar e Footer ufficiali */
-      [data-testid="stHeader"], [data-testid="stToolbar"], footer {
-        display: none !important;
-      }
-
-      /* 2. Nasconde il badge "Built with Streamlit" e il tasto Fullscreen */
-      .stAppDeployButton, 
-      [data-testid="stStatusWidget"],
-      .viewerBadge_container__1QSob,
-      .st-emotion-cache-zq59db { 
-        display: none !important; 
-      }
-
-      /* 3. Rimuove il padding dell'app per non avere scroll interni inutili */
-      .main .block-container {
+    /* Rimuove i margini della pagina Streamlit */
+    .block-container {
         padding: 0 !important;
+        margin: 0 !important;
         max-width: 100% !important;
-      }
+    }
+    
+    /* Nasconde header, footer e toolbar */
+    [data-testid="stHeader"], [data-testid="stToolbar"], footer {
+        display: none !important;
+    }
 
-      /* 4. Nasconde il link esterno che appare in basso a destra negli embed */
-      #StyledExternalLink { display: none !important; }
+    /* Fix per evitare il taglio su mobile e nascondere il badge */
+    .stApp {
+        overflow: hidden;
+    }
+    
+    /* Rimuove lo spazio vuoto in alto tipico di Streamlit */
+    .st-emotion-cache-18ni7ap {
+        padding-top: 0 !important;
+    }
 
-      /* 5. FIX RESPONSIVENESS: Evita che l'iframe interno tagli il gioco */
-      iframe {
-        border: none !important;
-      }
+    /* Nasconde il pulsante Fullscreen e il logo Balloon (selettore universale) */
+    button[title="View fullscreen"], .viewerBadge_container__1QSob, .stDeployButton {
+        display: none !important;
+    }
     </style>
-    """,
-    unsafe_allow_html=True,
-)
+    """, unsafe_allow_html=True)
 
 IMAGE_FOLDER = Path("images")
 
@@ -73,19 +73,19 @@ assets_json = json.dumps(assets)
 # Keep product URLs aligned with your images order.
 # If you add more images than products, the last URL will be reused.
 products = [
-    "https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-art-1",
-    "https://blululi.com/collections/t-shirts/products/colorful-mandala-geometric-t-shirt",
-    "https://blululi.com/collections/t-shirts/products/vibrant-mandala-tee-intricate-art-design",
-    "https://blululi.com/products/vibrant-mandala-tee-colorful-intricate-2",
-    "https://blululi.com/products/spun-polyester-square-pillowcase-mandala-art-original-fine-art-hand-drawn-dark-charcoal-blue-1",
-    "https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-art",
-    "https://blululi.com/products/rainbow-mandala-womens-short-sleeve-t-shirt-2",
-    "https://blululi.com/collections/t-shirts/products/intricate-mandala-t-shirt-colorful-geometric-design",
-    "https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-intricate-1",
-    "https://blululi.com/products/one-shoulder-dress-with-hand-drawn-mandala-design-black-with-orange-red-and-gold-accents",
-    "https://blululi.com/collections/kitchen-decor/products/mandala-art-15oz-ceramic-mug-perfect-for-coffee-tea-lovers-2",
-    "https://blululi.com/products/colorful-mandala-tote-bag-vibrant-boho-all-over-print-beach-market-tote",
-    "https://blululi.com/products/colorful-mandala-tote-bag-boho-psychedelic-all-over-print",
+    "/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-art-1",
+    "/collections/t-shirts/products/colorful-mandala-geometric-t-shirt",
+    "/collections/t-shirts/products/vibrant-mandala-tee-intricate-art-design",
+    "/products/vibrant-mandala-tee-colorful-intricate-2",
+    "/products/spun-polyester-square-pillowcase-mandala-art-original-fine-art-hand-drawn-dark-charcoal-blue-1",
+    "/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-art",
+    "/products/rainbow-mandala-womens-short-sleeve-t-shirt-2",
+    "/collections/t-shirts/products/intricate-mandala-t-shirt-colorful-geometric-design",
+    "/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-intricate-1",
+    "/products/one-shoulder-dress-with-hand-drawn-mandala-design-black-with-orange-red-and-gold-accents",
+    "/collections/kitchen-decor/products/mandala-art-15oz-ceramic-mug-perfect-for-coffee-tea-lovers-2",
+    "/products/colorful-mandala-tote-bag-vibrant-boho-all-over-print-beach-market-tote",
+    "/products/colorful-mandala-tote-bag-boho-psychedelic-all-over-print",
 ]
 
 products_json = json.dumps(products)
@@ -1147,4 +1147,4 @@ newGame();
 </html>
 """
 
-st.components.v1.html(components_html, height=1400, scrolling=False)
+st.components.v1.html(components_html, height=1500, scrolling=False)
