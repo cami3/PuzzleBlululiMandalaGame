@@ -6,6 +6,7 @@ from pathlib import Path
 import streamlit as st
 from PIL import Image
 
+
 st.set_page_config(page_title="Blululi Puzzle Studio", page_icon="🧩", layout="wide")
 
 st.markdown("""
@@ -36,26 +37,25 @@ IMAGE_FOLDER = Path("images")
 def encode_image(path):
 
     with Image.open(path) as src:
-
         img = src.convert("RGB")
         img.thumbnail((1600,1600))
 
-        buffer = io.BytesIO()
-        img.save(buffer,"JPEG",quality=90,optimize=True)
+        buf = io.BytesIO()
+        img.save(buf,"JPEG",quality=90,optimize=True)
 
-    encoded = base64.b64encode(buffer.getvalue()).decode()
+    encoded = base64.b64encode(buf.getvalue()).decode()
 
     return {
-        "name": path.stem.replace("_"," ").replace("-"," ").title(),
+        "name": path.stem.replace("_"," ").title(),
         "url": f"data:image/jpeg;base64,{encoded}"
     }
 
-images = sorted(
+image_paths = sorted(
     p for p in IMAGE_FOLDER.iterdir()
-    if p.suffix.lower() in {".jpg",".jpeg",".png",".webp"}
+    if p.suffix.lower() in {".png",".jpg",".jpeg",".webp"}
 )
 
-assets = [encode_image(p) for p in images]
+assets = [encode_image(p) for p in image_paths]
 
 products = [
 "https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-art-1",
