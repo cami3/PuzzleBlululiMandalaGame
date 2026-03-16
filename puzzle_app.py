@@ -6,40 +6,40 @@ from pathlib import Path
 import streamlit as st
 from PIL import Image
 
-# 1. Configurazione pagina con margini minimi
-st.set_page_config(page_title="Blululi Puzzle", layout="wide", initial_sidebar_state="collapsed")
-
-# 2. CSS per eliminare margini esterni e proteggere la visualizzazione mobile
-st.markdown("""
+st.set_page_config(page_title="Blululi Puzzle Studio", page_icon="🧩", layout="wide")
+st.markdown(
+    """
     <style>
-    /* Rimuove i margini della pagina Streamlit */
-    .block-container {
+      /* 1. Nasconde Header, Toolbar e Footer ufficiali */
+      [data-testid="stHeader"], [data-testid="stToolbar"], footer {
+        display: none !important;
+      }
+
+      /* 2. Nasconde il badge "Built with Streamlit" e il tasto Fullscreen */
+      .stAppDeployButton, 
+      [data-testid="stStatusWidget"],
+      .viewerBadge_container__1QSob,
+      .st-emotion-cache-zq59db { 
+        display: none !important; 
+      }
+
+      /* 3. Rimuove il padding dell'app per non avere scroll interni inutili */
+      .main .block-container {
         padding: 0 !important;
-        margin: 0 !important;
         max-width: 100% !important;
-    }
-    
-    /* Nasconde header, footer e toolbar */
-    [data-testid="stHeader"], [data-testid="stToolbar"], footer {
-        display: none !important;
-    }
+      }
 
-    /* Fix per evitare il taglio su mobile e nascondere il badge */
-    .stApp {
-        overflow: hidden;
-    }
-    
-    /* Rimuove lo spazio vuoto in alto tipico di Streamlit */
-    .st-emotion-cache-18ni7ap {
-        padding-top: 0 !important;
-    }
+      /* 4. Nasconde il link esterno che appare in basso a destra negli embed */
+      #StyledExternalLink { display: none !important; }
 
-    /* Nasconde il pulsante Fullscreen e il logo Balloon (selettore universale) */
-    button[title="View fullscreen"], .viewerBadge_container__1QSob, .stDeployButton {
-        display: none !important;
-    }
+      /* 5. FIX RESPONSIVENESS: Evita che l'iframe interno tagli il gioco */
+      iframe {
+        border: none !important;
+      }
     </style>
-    """, unsafe_allow_html=True)
+    """,
+    unsafe_allow_html=True,
+)
 
 IMAGE_FOLDER = Path("images")
 
@@ -790,8 +790,8 @@ components_html = f"""
   </div>
 
 <script>
-const images = {{assets_json}};  // <-- Doppia graffa
-const products = {{products_json}}; // <-- Doppia graffa
+const images = {assets_json};
+const products = {products_json};
 
 images.forEach(img => {{
   const preloaded = new Image();
@@ -967,9 +967,9 @@ function renderBoard() {{
 
     const pos = piecePosition(pieceId);
 
-    tile.style.backgroundImage = `url("${{currentImage}}")`; // <-- Doppia graffa
-    tile.style.backgroundSize = `${{size}}px ${{size}}px`;    // <-- Doppia graffa
-    tile.style.backgroundPosition = `${{-pos.col * one}}px ${{-pos.row * one}}px`; // <-- Doppia graffa
+    tile.style.backgroundImage = `url("${{currentImage}}")`;
+    tile.style.backgroundSize = `${{size}}px ${{size}}px`;
+    tile.style.backgroundPosition = `${{-pos.col * one}}px ${{-pos.row * one}}px`;
 
     tile.addEventListener("click", () => onTileClick(boardIndex));
 
@@ -1058,21 +1058,12 @@ function checkSolved() {{
   stopTimer();
   maybeUpdateBest();
   renderBoard();
-  
-  const idx = Number(imageSelect.value || 0);
-  const pUrl = safeProductUrl(idx);
-  
   finalImage.src = currentImage;
   overlayMoves.textContent = String(moves);
-  
-  // Nota le doppie graffe {{ }} qui sotto: servono per "proteggere" il codice JS da Python
-  overlayTime.textContent = `${{seconds}}s`; 
+  overlayTime.textContent = `${{seconds}}s`;
   overlayGrid.textContent = `${{grid}}×${{grid}}`;
-  overlayCopy.textContent = `You completed "${{currentName}}" in ${{moves}} moves and ${{seconds}} seconds.`;
-  
-  shopBtn.href = pUrl;
-  shopBtn.target = "_top"; 
-  
+  overlayCopy.textContent = `You completed “${{currentName}}” in ${{moves}} moves and ${{seconds}} seconds.`;
+  shopBtn.href = safeProductUrl(Number(imageSelect.value || 0));
   statusPill.textContent = "Completed";
   overlay.classList.add("show");
   pulseVibrate();
@@ -1156,4 +1147,4 @@ newGame();
 </html>
 """
 
-st.components.v1.html(components_html, height=2500, scrolling=False)
+st.components.v1.html(components_html, height=1400, scrolling=False)
