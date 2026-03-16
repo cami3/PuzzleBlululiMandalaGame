@@ -128,14 +128,23 @@ components_html = f"""
     min-height: 100%;
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     color: var(--text);
+    height: 100%;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
     background:
       radial-gradient(circle at top left, rgba(139,92,246,.15), transparent 30%),
       radial-gradient(circle at top right, rgba(34,197,94,.09), transparent 20%),
       radial-gradient(circle at bottom center, rgba(99,102,241,.10), transparent 26%),
       linear-gradient(180deg, #f8faff 0%, #eef2ff 100%);
   }}
+  .stApp iframe {{
+      height: 100vh !important;
+   }}
+  body {{
+      margin:0;
+      padding:0px;
+   }}
 
-  body {{ padding: 18px; }}
 
   .app {{
     width: min(1380px, 100%);
@@ -146,6 +155,7 @@ components_html = f"""
     backdrop-filter: blur(18px);
     border: 1px solid rgba(255,255,255,.7);
     box-shadow: var(--shadow);
+    padding: 18px;
   }}
 
   .topbar {{
@@ -642,6 +652,7 @@ components_html = f"""
     .tile {{ border-radius: 3px; }}
     .kpis, .status-row, .overlay-stats {{ grid-template-columns: 1fr; }}
     .overlay-box {{ padding: 20px; }}
+    .app {{ border-radius: 0; }}
   }}
 </style>
 </head>
@@ -1147,4 +1158,8 @@ newGame();
 </html>
 """
 
-st.components.v1.html(components_html, height=1400, scrolling=False)
+st.components.v1.html(
+    components_html,
+    height=0,
+    scrolling=True
+)
