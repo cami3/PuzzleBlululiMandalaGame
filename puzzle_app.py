@@ -1050,7 +1050,7 @@ function maybeUpdateBest() {{
   updateBest();
 }}
 
-function checkSolved() {
+function checkSolved() {{
   const ok = arrangement.every((pieceId, idx) => pieceId === idx);
   if (!ok) return;
 
@@ -1075,7 +1075,7 @@ function checkSolved() {
   statusPill.textContent = "Completed";
   overlay.classList.add("show");
   pulseVibrate();
-}
+}}
 
 function newGame() {{
   solved = false;
