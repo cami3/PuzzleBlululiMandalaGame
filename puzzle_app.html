@@ -1,1117 +1,293 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="theme-color" content="#6d28d9" />
-  <title>Blululi Puzzle Studio</title>
 
-  <style>
-    :root {
-      --bg: #f5f7ff;
-      --bg-2: #eef2ff;
-      --panel: rgba(255, 255, 255, 0.76);
-      --panel-strong: rgba(255, 255, 255, 0.92);
-      --line: rgba(79, 70, 229, 0.12);
-      --text: #111827;
-      --muted: #667085;
-      --accent: #6d28d9;
-      --accent-2: #8b5cf6;
-      --success: #16a34a;
-      --shadow: 0 20px 60px rgba(17, 24, 39, 0.12);
-      --shadow-soft: 0 10px 30px rgba(17, 24, 39, 0.08);
-      --radius-xl: 28px;
-      --radius-lg: 22px;
-      --radius-md: 16px;
-      --safe-top: env(safe-area-inset-top, 0px);
-      --safe-bottom: env(safe-area-inset-bottom, 0px);
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Blululi Puzzle Studio</title>
+
+<style>
+
+body{
+margin:0;
+font-family:system-ui;
+background:#f5f7ff;
+}
+
+.app{
+max-width:1200px;
+margin:auto;
+padding:20px;
+}
+
+header{
+display:flex;
+align-items:center;
+gap:10px;
+font-weight:700;
+font-size:20px;
+margin-bottom:20px;
+}
+
+.layout{
+display:grid;
+grid-template-columns:320px 1fr;
+gap:20px;
+}
+
+@media(max-width:900px){
+.layout{
+grid-template-columns:1fr;
+}
+}
+
+.panel{
+background:white;
+padding:20px;
+border-radius:20px;
+box-shadow:0 10px 30px rgba(0,0,0,.08);
+}
+
+#board{
+display:grid;
+gap:2px;
+aspect-ratio:1/1;
+background:white;
+border-radius:16px;
+overflow:hidden;
+}
+
+.tile{
+background-size:cover;
+cursor:pointer;
+}
+
+button{
+border:none;
+padding:12px;
+border-radius:10px;
+font-weight:700;
+cursor:pointer;
+}
+
+.primary{
+background:#6d28d9;
+color:white;
+}
+
+.secondary{
+background:#eee;
+}
+
+.overlay{
+position:fixed;
+inset:0;
+display:none;
+align-items:center;
+justify-content:center;
+background:rgba(0,0,0,.5);
+}
+
+.overlay.show{
+display:flex;
+}
+
+.overlay-box{
+background:white;
+padding:30px;
+border-radius:20px;
+max-width:420px;
+text-align:center;
+}
+
+</style>
 
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      min-height: 100%;
-      overflow-x: hidden;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      color: var(--text);
-      background:
-        radial-gradient(circle at top left, rgba(139,92,246,.16), transparent 30%),
-        radial-gradient(circle at top right, rgba(34,197,94,.10), transparent 22%),
-        radial-gradient(circle at bottom center, rgba(99,102,241,.10), transparent 28%),
-        linear-gradient(180deg, #f8faff 0%, #eef2ff 100%);
-      -webkit-overflow-scrolling: touch;
-    }
-
-    body {
-      padding: 0;
-    }
-
-    .app {
-      width: 100%;
-      max-width: 1440px;
-      margin: 0 auto;
-      padding: 0;
-    }
-
-    .mobile-hero {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      padding: calc(var(--safe-top) + 10px) 14px 10px;
-      backdrop-filter: blur(18px);
-      background: linear-gradient(180deg, rgba(248,250,255,.92), rgba(248,250,255,.76));
-      border-bottom: 1px solid rgba(255,255,255,.6);
-    }
-
-    .mobile-hero-row {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-badge {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      color: white;
-      font-size: 1.2rem;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 12px 24px rgba(109,40,217,.26);
-      flex: 0 0 auto;
-    }
-
-    .brand-copy {
-      min-width: 0;
-    }
-
-    .brand-name {
-      font-weight: 900;
-      letter-spacing: .01em;
-      line-height: 1.1;
-      font-size: 1rem;
-    }
-
-    .brand-sub {
-      color: var(--muted);
-      font-size: .84rem;
-      margin-top: 2px;
-    }
-
-    .page {
-      display: grid;
-      gap: 12px;
-      padding: 12px 12px calc(20px + var(--safe-bottom));
-    }
-
-    .card {
-      border-radius: var(--radius-lg);
-      background: var(--panel);
-      border: 1px solid rgba(255,255,255,.72);
-      backdrop-filter: blur(14px);
-      box-shadow: var(--shadow-soft);
-    }
-
-    .hero-card {
-      padding: 16px;
-      background:
-        radial-gradient(circle at top right, rgba(139,92,246,.16), transparent 30%),
-        linear-gradient(180deg, rgba(255,255,255,.90), rgba(255,255,255,.70));
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 11px;
-      border-radius: 999px;
-      background: rgba(109,40,217,.08);
-      color: var(--accent);
-      font-size: .72rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: .12em;
-      margin-bottom: 12px;
-    }
-
-    .headline {
-      margin: 0 0 8px 0;
-      font-size: clamp(1.45rem, 6vw, 2.3rem);
-      line-height: 1.02;
-      font-weight: 950;
-      letter-spacing: -.03em;
-    }
-
-    .sub {
-      margin: 0;
-      color: var(--muted);
-      line-height: 1.5;
-      font-size: .95rem;
-    }
-
-    .controls-card,
-    .preview-card,
-    .board-card,
-    .shop-card {
-      padding: 14px;
-    }
-
-    .label {
-      font-size: .74rem;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      color: var(--muted);
-      font-weight: 900;
-      margin-bottom: 8px;
-      display: block;
-    }
-
-    .helper {
-      color: var(--muted);
-      font-size: .86rem;
-      line-height: 1.45;
-      margin-top: 8px;
-    }
-
-    .controls {
-      display: grid;
-      gap: 14px;
-    }
-
-    .control {
-      display: grid;
-      gap: 8px;
-    }
-
-    select,
-    input[type="range"] {
-      width: 100%;
-    }
-
-    select {
-      appearance: none;
-      border: 1px solid rgba(17,24,39,.08);
-      border-radius: 16px;
-      background: rgba(255,255,255,.98);
-      color: var(--text);
-      padding: 14px 15px;
-      font-size: .98rem;
-      outline: none;
-      box-shadow: 0 1px 0 rgba(255,255,255,.8) inset;
-    }
-
-    input[type="range"] {
-      accent-color: var(--accent);
-    }
-
-    .range-wrap {
-      display: grid;
-      gap: 8px;
-    }
-
-    .range-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .range-value {
-      min-width: 74px;
-      text-align: center;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(255,255,255,.96);
-      border: 1px solid rgba(17,24,39,.08);
-      font-weight: 900;
-      font-size: .92rem;
-    }
-
-    .difficulty-copy {
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      color: var(--muted);
-      font-size: .82rem;
-    }
-
-    .btn-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    button,
-    .cta-link {
-      appearance: none;
-      border: 0;
-      border-radius: 16px;
-      padding: 13px 16px;
-      font-size: .95rem;
-      font-weight: 900;
-      cursor: pointer;
-      transition: transform .16s ease, box-shadow .16s ease, opacity .16s ease, background .16s ease;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    button:active,
-    .cta-link:active {
-      transform: scale(.99);
-    }
-
-    .btn-primary {
-      color: white;
-      background: linear-gradient(135deg, var(--accent), var(--accent-2));
-      box-shadow: 0 14px 24px rgba(109,40,217,.24);
-    }
-
-    .btn-secondary {
-      color: var(--text);
-      background: rgba(255,255,255,.96);
-      border: 1px solid rgba(17,24,39,.08);
-    }
-
-    .btn-success {
-      color: white;
-      background: linear-gradient(135deg, #16a34a, #22c55e);
-      box-shadow: 0 14px 24px rgba(34,197,94,.20);
-    }
-
-    .preview {
-      width: 100%;
-      aspect-ratio: 1 / 1;
-      border-radius: 18px;
-      overflow: hidden;
-      background: rgba(255,255,255,.94);
-      border: 1px solid rgba(17,24,39,.07);
-      position: relative;
-    }
-
-    .preview img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .preview-badge {
-      position: absolute;
-      left: 10px;
-      right: 10px;
-      bottom: 10px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(17,24,39,.62);
-      color: white;
-      font-size: .82rem;
-      font-weight: 800;
-      backdrop-filter: blur(8px);
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .board-head {
-      display: grid;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .board-title {
-      font-size: 1.05rem;
-      font-weight: 950;
-      letter-spacing: -.01em;
-    }
-
-    .board-note {
-      color: var(--muted);
-      font-size: .9rem;
-      line-height: 1.45;
-      margin-top: 4px;
-    }
-
-    .streak-pill {
-      justify-self: start;
-      border-radius: 999px;
-      padding: 9px 12px;
-      background: rgba(255,255,255,.9);
-      border: 1px solid rgba(17,24,39,.08);
-      font-size: .82rem;
-      font-weight: 900;
-      white-space: nowrap;
-    }
-
-    .game-stage {
-      position: relative;
-    }
-
-    #board {
-      width: 100%;
-      margin: 0 auto;
-      aspect-ratio: 1 / 1;
-      display: grid;
-      gap: 2px;
-      padding: 4px;
-      background: rgba(255,255,255,.96);
-      border: 1px solid rgba(109,40,217,.10);
-      border-radius: 18px;
-      overflow: hidden;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.94), 0 18px 36px rgba(17,24,39,.06);
-      user-select: none;
-      touch-action: manipulation;
-    }
-
-    .tile {
-      position: relative;
-      border: 0;
-      outline: 0;
-      border-radius: 4px;
-      background-repeat: no-repeat;
-      background-color: rgba(255,255,255,.7);
-      cursor: grab;
-      overflow: hidden;
-      transform: translateZ(0);
-      will-change: transform;
-      transition: transform .13s cubic-bezier(.2,.8,.2,1), box-shadow .13s ease, opacity .13s ease, filter .13s ease;
-    }
-
-    .tile.dragging {
-      opacity: .76;
-      cursor: grabbing;
-      transform: scale(.985);
-    }
-
-    .tile.selected {
-      box-shadow: inset 0 0 0 3px rgba(109,40,217,.98);
-    }
-
-    .tile.solved {
-      cursor: default;
-    }
-
-    .status-row {
-      margin-top: 12px;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 10px;
-    }
-
-    .status-card {
-      border-radius: 16px;
-      padding: 12px;
-      background: rgba(255,255,255,.86);
-      border: 1px solid rgba(17,24,39,.06);
-    }
-
-    .status-label {
-      font-size: .7rem;
-      text-transform: uppercase;
-      letter-spacing: .09em;
-      color: var(--muted);
-      font-weight: 800;
-      margin-bottom: 6px;
-    }
-
-    .status-value {
-      font-size: 1rem;
-      font-weight: 950;
-    }
-
-    .focus-tip {
-      margin-top: 12px;
-      text-align: center;
-      color: var(--muted);
-      font-size: .88rem;
-      line-height: 1.45;
-    }
-
-    .mini-item {
-      border-radius: 16px;
-      padding: 12px 14px;
-      border: 1px solid rgba(17,24,39,.06);
-      background: rgba(255,255,255,.80);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .mini-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 12px;
-      display: grid;
-      place-items: center;
-      flex: 0 0 auto;
-      background: rgba(109,40,217,.08);
-    }
-
-    .mini-copy strong {
-      display: block;
-      margin-bottom: 3px;
-      font-size: .92rem;
-    }
-
-    .mini-copy span {
-      color: var(--muted);
-      font-size: .86rem;
-      line-height: 1.4;
-    }
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(15,23,42,.54);
-      backdrop-filter: blur(8px);
-      padding: 14px;
-      z-index: 120;
-    }
-
-    .overlay.show {
-      display: flex;
-    }
-
-    .overlay-box {
-      width: min(560px, 100%);
-      max-height: calc(100vh - 28px);
-      overflow: auto;
-      background: rgba(255,255,255,.98);
-      border-radius: 24px;
-      padding: 20px;
-      text-align: center;
-      box-shadow: 0 30px 60px rgba(0,0,0,.18);
-      border: 1px solid rgba(255,255,255,.88);
-    }
-
-    .overlay-badge {
-      display: inline-flex;
-      padding: 8px 12px;
-      border-radius: 999px;
-      background: rgba(34,197,94,.10);
-      color: #15803d;
-      font-size: .76rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: .1em;
-      margin-bottom: 14px;
-    }
-
-    .overlay-title {
-      margin: 0 0 10px 0;
-      font-size: 1.55rem;
-      font-weight: 950;
-      letter-spacing: -.03em;
-    }
-
-    .overlay-copy {
-      margin: 0 0 16px 0;
-      color: var(--muted);
-      line-height: 1.55;
-      font-size: .96rem;
-    }
-
-    .overlay-image {
-      width: 100%;
-      max-width: 320px;
-      aspect-ratio: 1 / 1;
-      object-fit: cover;
-      border-radius: 18px;
-      display: block;
-      margin: 0 auto 18px auto;
-      box-shadow: 0 18px 30px rgba(17,24,39,.14);
-    }
-
-    .overlay-stats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .overlay-stat {
-      border-radius: 16px;
-      padding: 12px;
-      background: rgba(248,250,252,1);
-      border: 1px solid rgba(17,24,39,.06);
-    }
-
-    .overlay-stat small {
-      display: block;
-      color: var(--muted);
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      margin-bottom: 4px;
-    }
-
-    .overlay-stat strong {
-      font-size: .96rem;
-      font-weight: 950;
-    }
-
-    .overlay-actions {
-      display: grid;
-      gap: 10px;
-    }
-
-    @media (min-width: 900px) {
-      .page {
-        grid-template-columns: 360px minmax(0, 1fr);
-        align-items: start;
-        padding: 18px;
-      }
-
-      .left-col {
-        display: grid;
-        gap: 14px;
-        position: sticky;
-        top: 84px;
-      }
-
-      .right-col {
-        display: grid;
-        gap: 14px;
-      }
-
-      .board-head {
-        grid-template-columns: 1fr auto;
-        align-items: start;
-      }
-
-      .status-row {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-      }
-
-      .overlay-actions {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-    }
-  </style>
 </head>
+
 <body>
-  <div class="app">
-    <div class="mobile-hero">
-      <div class="mobile-hero-row">
-        <div class="brand-badge">🧩</div>
-        <div class="brand-copy">
-          <div class="brand-name">Blululi Puzzle Studio</div>
-          <div class="brand-sub">Play the art. Discover the product.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="page">
-      <div class="left-col">
-        <section class="card hero-card">
-          <div class="eyebrow">Interactive Brand Experience</div>
-          <h1 class="headline">Play the art. Discover the product.</h1>
-          <p class="sub">
-            Choose a mandala, set your difficulty, and solve the puzzle. Built for mobile-first shopping journeys.
-          </p>
-        </section>
-
-        <section class="card controls-card">
-          <div class="controls">
-            <div class="control">
-              <label class="label" for="imageSelect">Artwork</label>
-              <select id="imageSelect"></select>
-              <div class="helper">
-                Each design becomes a playable branded moment with a direct product path.
-              </div>
-            </div>
-
-            <div class="control">
-              <label class="label" for="difficulty">Difficulty</label>
-              <div class="range-wrap">
-                <div class="range-row">
-                  <input id="difficulty" type="range" min="2" max="8" value="4" />
-                  <div class="range-value" id="gridBadge">4×4</div>
-                </div>
-                <div class="difficulty-copy">
-                  <span id="difficultyName">Relaxed</span>
-                  <span>2 to 8 tiles per side</span>
-                </div>
-              </div>
-            </div>
-
-            <div class="btn-row">
-              <button class="btn-primary" id="shuffleBtn">Shuffle</button>
-              <button class="btn-secondary" id="resetBtn">View Solved</button>
-            </div>
-          </div>
-        </section>
-
-        <section class="card preview-card">
-          <div class="label">Featured Preview</div>
-          <div class="preview">
-            <img id="previewImg" alt="Selected artwork preview" />
-            <div class="preview-badge">
-              <span id="previewName">Mandala</span>
-              <span id="difficultyTag">Relaxed</span>
-            </div>
-          </div>
-        </section>
-
-        <section class="card shop-card">
-          <div class="mini-item">
-            <div class="mini-icon">✨</div>
-            <div class="mini-copy">
-              <strong>More premium designs in our shop</strong>
-              <span>Solve the puzzle, then jump directly to the matching product page.</span>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <div class="right-col">
-        <section class="card board-card">
-          <div class="board-head">
-            <div>
-              <div class="board-title">Complete the artwork</div>
-              <div class="board-note">
-                Tap two tiles on mobile, or drag and drop on desktop.
-              </div>
-            </div>
-            <div class="streak-pill" id="statusPill">Ready to play</div>
-          </div>
-
-          <div class="game-stage">
-            <div id="board"></div>
-          </div>
-
-          <div class="status-row">
-            <div class="status-card">
-              <div class="status-label">Grid</div>
-              <div class="status-value" id="gridStat">4×4</div>
-            </div>
-            <div class="status-card">
-              <div class="status-label">Moves</div>
-              <div class="status-value" id="moves">0</div>
-            </div>
-            <div class="status-card">
-              <div class="status-label">Time</div>
-              <div class="status-value" id="time">0s</div>
-            </div>
-            <div class="status-card">
-              <div class="status-label">Best This Session</div>
-              <div class="status-value" id="best">—</div>
-            </div>
-          </div>
-
-          <div class="focus-tip">
-            Winning strategy: start with corners, track strong curves, and follow repeating line patterns.
-          </div>
-        </section>
-      </div>
-    </div>
-  </div>
-
-  <div id="overlay" class="overlay">
-    <div class="overlay-box">
-      <div class="overlay-badge">Puzzle Complete</div>
-      <h2 class="overlay-title">Beautiful work ✨</h2>
-      <p class="overlay-copy" id="overlayCopy"></p>
-      <img id="finalImage" class="overlay-image" alt="Completed design" />
-
-      <div class="overlay-stats">
-        <div class="overlay-stat">
-          <small>Moves</small>
-          <strong id="overlayMoves">0</strong>
-        </div>
-        <div class="overlay-stat">
-          <small>Time</small>
-          <strong id="overlayTime">0s</strong>
-        </div>
-        <div class="overlay-stat">
-          <small>Grid</small>
-          <strong id="overlayGrid">4×4</strong>
-        </div>
-      </div>
-
-      <div class="overlay-actions">
-        <a id="shopBtn" target="_top" class="cta-link btn-success">Shop This Design</a>
-        <button class="btn-primary" id="againBtn">Play Again</button>
-        <button class="btn-secondary" id="closeOverlayBtn">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    const images = __ASSETS_JSON__;
-    const products = __PRODUCTS_JSON__;
-
-    images.forEach((img) => {
-      const preloaded = new Image();
-      preloaded.src = img.url;
-    });
-
-    const difficultyLabels = {
-      2: "Easy",
-      3: "Casual",
-      4: "Relaxed",
-      5: "Standard",
-      6: "Challenging",
-      7: "Expert",
-      8: "Master"
-    };
-
-    const board = document.getElementById("board");
-    const imageSelect = document.getElementById("imageSelect");
-    const difficulty = document.getElementById("difficulty");
-    const gridBadge = document.getElementById("gridBadge");
-    const gridStat = document.getElementById("gridStat");
-    const difficultyName = document.getElementById("difficultyName");
-    const difficultyTag = document.getElementById("difficultyTag");
-    const movesEl = document.getElementById("moves");
-    const timeEl = document.getElementById("time");
-    const bestEl = document.getElementById("best");
-    const previewImg = document.getElementById("previewImg");
-    const previewName = document.getElementById("previewName");
-    const shuffleBtn = document.getElementById("shuffleBtn");
-    const resetBtn = document.getElementById("resetBtn");
-    const overlay = document.getElementById("overlay");
-    const overlayCopy = document.getElementById("overlayCopy");
-    const overlayMoves = document.getElementById("overlayMoves");
-    const overlayTime = document.getElementById("overlayTime");
-    const overlayGrid = document.getElementById("overlayGrid");
-    const finalImage = document.getElementById("finalImage");
-    const againBtn = document.getElementById("againBtn");
-    const closeOverlayBtn = document.getElementById("closeOverlayBtn");
-    const shopBtn = document.getElementById("shopBtn");
-    const statusPill = document.getElementById("statusPill");
-
-    let grid = 4;
-    let arrangement = [];
-    let selectedIndex = null;
-    let dragFrom = null;
-    let currentImage = images[0]?.url || "";
-    let currentName = images[0]?.name || "Mandala";
-    let moves = 0;
-    let seconds = 0;
-    let timerId = null;
-    let solved = false;
-    let sessionBest = null;
-
-    function safeProductUrl(index) {
-      if (!products.length) return "https://blululi.com";
-      return products[index] || products[products.length - 1] || "https://blululi.com";
-    }
-
-    function difficultyLabel() {
-      return difficultyLabels[grid] || "Standard";
-    }
-
-    function pulseVibrate(pattern = 8) {
-      if (navigator.vibrate) navigator.vibrate(pattern);
-    }
-
-    function formatSeconds(value) {
-      return `${value}s`;
-    }
-
-    function populateImages() {
-      imageSelect.innerHTML = "";
-      images.forEach((img, i) => {
-        const opt = document.createElement("option");
-        opt.value = String(i);
-        opt.textContent = img.name;
-        imageSelect.appendChild(opt);
-      });
-    }
-
-    function updateGridLabels() {
-      const label = `${grid}×${grid}`;
-      gridBadge.textContent = label;
-      gridStat.textContent = label;
-      overlayGrid.textContent = label;
-      difficultyName.textContent = difficultyLabel();
-      difficultyTag.textContent = difficultyLabel();
-      board.style.gridTemplateColumns = `repeat(${grid}, 1fr)`;
-    }
-
-    function setPreview() {
-      const idx = Number(imageSelect.value || 0);
-      currentImage = images[idx]?.url || "";
-      currentName = images[idx]?.name || "Mandala";
-      previewImg.src = currentImage;
-      previewName.textContent = currentName;
-      shopBtn.href = safeProductUrl(idx);
-    }
-
-    function resetStats() {
-      moves = 0;
-      seconds = 0;
-      movesEl.textContent = "0";
-      timeEl.textContent = "0s";
-      statusPill.textContent = "Game in progress";
-    }
-
-    function updateBest() {
-      if (!sessionBest) {
-        bestEl.textContent = "—";
-        return;
-      }
-      bestEl.textContent = `${sessionBest.seconds}s`;
-    }
-
-    function stopTimer() {
-      if (timerId !== null) {
-        clearInterval(timerId);
-        timerId = null;
-      }
-    }
-
-    function startTimer() {
-      stopTimer();
-      timerId = window.setInterval(() => {
-        if (solved) return;
-        seconds += 1;
-        timeEl.textContent = formatSeconds(seconds);
-      }, 1000);
-    }
-
-    function makeSolvedArrangement() {
-      return Array.from({ length: grid * grid }, (_, i) => i);
-    }
-
-    function shuffleArray(arr) {
-      const out = [...arr];
-      for (let i = out.length - 1; i > 0; i -= 1) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [out[i], out[j]] = [out[j], out[i]];
-      }
-      return out;
-    }
-
-    function makeShuffledArrangement() {
-      const solvedArr = makeSolvedArrangement();
-      let arr = shuffleArray(solvedArr);
-      if (arr.every((v, i) => v === i) && arr.length > 1) {
-        [arr[0], arr[1]] = [arr[1], arr[0]];
-      }
-      return arr;
-    }
-
-    function boardSize() {
-      return board.clientWidth;
-    }
-
-    function tileSize() {
-      return board.clientWidth / grid;
-    }
-
-    function piecePosition(pieceId) {
-      const row = Math.floor(pieceId / grid);
-      const col = pieceId % grid;
-      return { row, col };
-    }
-
-    function onTileClick(boardIndex) {
-      if (solved) return;
-
-      if (selectedIndex === null) {
-        selectedIndex = boardIndex;
-        renderBoard();
-        return;
-      }
-
-      if (selectedIndex === boardIndex) {
-        selectedIndex = null;
-        renderBoard();
-        return;
-      }
-
-      swapTiles(selectedIndex, boardIndex);
-    }
-
-    function swapTiles(a, b) {
-      if (a === b || solved) return;
-      [arrangement[a], arrangement[b]] = [arrangement[b], arrangement[a]];
-      moves += 1;
-      movesEl.textContent = String(moves);
-      selectedIndex = null;
-      pulseVibrate(8);
-      requestAnimationFrame(() => {
-        renderBoard();
-        checkSolved();
-      });
-    }
-
-    function renderBoard() {
-      board.innerHTML = "";
-      const size = boardSize();
-      const one = tileSize();
-
-      arrangement.forEach((pieceId, boardIndex) => {
-        const tile = document.createElement("button");
-        tile.type = "button";
-        tile.className = "tile" + (solved ? " solved" : "");
-        tile.dataset.boardIndex = String(boardIndex);
-        tile.dataset.pieceId = String(pieceId);
-        tile.draggable = !solved;
-        tile.setAttribute("aria-label", `Puzzle tile ${boardIndex + 1}`);
-
-        const pos = piecePosition(pieceId);
-        tile.style.backgroundImage = `url("${currentImage}")`;
-        tile.style.backgroundSize = `${size}px ${size}px`;
-        tile.style.backgroundPosition = `${-pos.col * one}px ${-pos.row * one}px`;
-
-        tile.addEventListener("click", () => onTileClick(boardIndex));
-
-        tile.addEventListener("dragstart", () => {
-          if (solved) return;
-          dragFrom = boardIndex;
-          tile.classList.add("dragging");
-        });
-
-        tile.addEventListener("dragend", () => {
-          tile.classList.remove("dragging");
-          dragFrom = null;
-        });
-
-        tile.addEventListener("dragover", (e) => {
-          if (!solved) e.preventDefault();
-        });
-
-        tile.addEventListener("drop", (e) => {
-          e.preventDefault();
-          if (solved) return;
-          if (dragFrom === null || dragFrom === boardIndex) return;
-          swapTiles(dragFrom, boardIndex);
-          dragFrom = null;
-        });
-
-        if (selectedIndex === boardIndex) {
-          tile.classList.add("selected");
-        }
-
-        board.appendChild(tile);
-      });
-    }
-
-    function closeOverlay() {
-      overlay.classList.remove("show");
-    }
-
-    function maybeUpdateBest() {
-      if (!sessionBest || seconds < sessionBest.seconds) {
-        sessionBest = { seconds, moves, grid, name: currentName };
-      }
-      updateBest();
-    }
-
-    function checkSolved() {
-      const ok = arrangement.every((pieceId, idx) => pieceId === idx);
-      if (!ok) return;
-
-      solved = true;
-      stopTimer();
-      maybeUpdateBest();
-      renderBoard();
-
-      finalImage.src = currentImage;
-      overlayMoves.textContent = String(moves);
-      overlayTime.textContent = formatSeconds(seconds);
-      overlayGrid.textContent = `${grid}×${grid}`;
-      overlayCopy.textContent = `You completed "${currentName}" in ${moves} moves and ${seconds} seconds.`;
-      shopBtn.href = safeProductUrl(Number(imageSelect.value || 0));
-      statusPill.textContent = "Completed";
-      overlay.classList.add("show");
-      pulseVibrate([12, 30, 12]);
-    }
-
-    function newGame() {
-      solved = false;
-      selectedIndex = null;
-      closeOverlay();
-      arrangement = makeShuffledArrangement();
-      updateGridLabels();
-      setPreview();
-      resetStats();
-      renderBoard();
-      startTimer();
-    }
-
-    function reshuffleCurrentGame() {
-      solved = false;
-      selectedIndex = null;
-      closeOverlay();
-      arrangement = makeShuffledArrangement();
-      resetStats();
-      renderBoard();
-      startTimer();
-    }
-
-    difficulty.addEventListener("input", () => {
-      grid = Number(difficulty.value);
-      updateGridLabels();
-    });
-
-    difficulty.addEventListener("change", () => {
-      grid = Number(difficulty.value);
-      newGame();
-    });
-
-    imageSelect.addEventListener("change", () => {
-      newGame();
-    });
-
-    shuffleBtn.addEventListener("click", () => {
-      reshuffleCurrentGame();
-    });
-
-    resetBtn.addEventListener("click", () => {
-      solved = false;
-      selectedIndex = null;
-      closeOverlay();
-      arrangement = makeSolvedArrangement();
-      updateGridLabels();
-      setPreview();
-      resetStats();
-      renderBoard();
-      startTimer();
-      statusPill.textContent = "Solved preview";
-    });
-
-    againBtn.addEventListener("click", () => {
-      reshuffleCurrentGame();
-    });
-
-    closeOverlayBtn.addEventListener("click", () => {
-      closeOverlay();
-    });
-
-    const ro = new ResizeObserver(() => {
-      if (arrangement.length) renderBoard();
-    });
-    ro.observe(board);
-
-    populateImages();
-    imageSelect.value = "0";
-    grid = Number(difficulty.value);
-    updateGridLabels();
-    setPreview();
-    updateBest();
-    newGame();
-  </script>
+
+<div class="app">
+
+<header>
+🧩 Blululi Puzzle Studio
+</header>
+
+<div class="layout">
+
+<div class="panel">
+
+<label>Artwork</label>
+<select id="imageSelect"></select>
+
+<label>Difficulty</label>
+<input id="difficulty" type="range" min="2" max="8" value="4">
+
+<br><br>
+
+<button class="primary" id="shuffleBtn">Shuffle</button>
+<button class="secondary" id="resetBtn">Solved</button>
+
+</div>
+
+<div class="panel">
+
+<div id="board"></div>
+
+</div>
+
+</div>
+
+</div>
+
+<div id="overlay" class="overlay">
+
+<div class="overlay-box">
+
+<h2>Puzzle Complete</h2>
+
+<p id="overlayCopy"></p>
+
+<a id="shopBtn" target="_blank">
+
+<button class="primary">Shop This Design</button>
+
+</a>
+
+<br><br>
+
+<button id="againBtn">Play Again</button>
+
+</div>
+
+</div>
+
+<script>
+
+const images = __ASSETS__;
+const products = __PRODUCTS__;
+
+const board = document.getElementById("board");
+const imageSelect = document.getElementById("imageSelect");
+const difficulty = document.getElementById("difficulty");
+
+let grid = 4
+let arrangement = []
+let moves = 0
+
+function safeProductUrl(index){
+return products[index] || products[products.length-1]
+}
+
+function populateImages(){
+
+images.forEach((img,i)=>{
+
+const opt=document.createElement("option")
+opt.value=i
+opt.textContent=img.name
+
+imageSelect.appendChild(opt)
+
+})
+
+}
+
+function shuffleArray(a){
+
+const arr=[...a]
+
+for(let i=arr.length-1;i>0;i--){
+
+const j=Math.floor(Math.random()*(i+1))
+
+[arr[i],arr[j]]=[arr[j],arr[i]]
+
+}
+
+return arr
+
+}
+
+function renderBoard(){
+
+board.innerHTML=""
+
+board.style.gridTemplateColumns=`repeat(${grid},1fr)`
+
+arrangement.forEach((piece,i)=>{
+
+const tile=document.createElement("div")
+
+tile.className="tile"
+
+tile.style.backgroundImage=`url(${images[piece].url})`
+
+tile.onclick=()=>swap(i)
+
+board.appendChild(tile)
+
+})
+
+}
+
+function swap(i){
+
+if(i===0)return
+
+[arrangement[i],arrangement[0]]=[arrangement[0],arrangement[i]]
+
+moves++
+
+renderBoard()
+
+checkSolved()
+
+}
+
+function checkSolved(){
+
+const ok=arrangement.every((v,i)=>v===i)
+
+if(!ok)return
+
+const overlay=document.getElementById("overlay")
+
+overlay.classList.add("show")
+
+const idx=imageSelect.value
+
+document.getElementById("shopBtn").href=safeProductUrl(idx)
+
+}
+
+function newGame(){
+
+grid=Number(difficulty.value)
+
+const total=grid*grid
+
+arrangement=shuffleArray([...Array(total).keys()])
+
+renderBoard()
+
+}
+
+document.getElementById("shuffleBtn").onclick=newGame
+
+document.getElementById("againBtn").onclick=()=>{
+
+document.getElementById("overlay").classList.remove("show")
+
+newGame()
+
+}
+
+populateImages()
+
+newGame()
+
+</script>
+
 </body>
 </html>
