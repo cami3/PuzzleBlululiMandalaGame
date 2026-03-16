@@ -1050,7 +1050,7 @@ function maybeUpdateBest() {{
   updateBest();
 }}
 
-function checkSolved() {{
+function checkSolved() {
   const ok = arrangement.every((pieceId, idx) => pieceId === idx);
   if (!ok) return;
 
@@ -1058,16 +1058,24 @@ function checkSolved() {{
   stopTimer();
   maybeUpdateBest();
   renderBoard();
+  
+  const idx = Number(imageSelect.value || 0);
+  const pUrl = safeProductUrl(idx);
+  
   finalImage.src = currentImage;
   overlayMoves.textContent = String(moves);
-  overlayTime.textContent = `${{seconds}}s`;
-  overlayGrid.textContent = `${{grid}}×${{grid}}`;
-  overlayCopy.textContent = `You completed “${{currentName}}” in ${{moves}} moves and ${{seconds}} seconds.`;
-  shopBtn.href = safeProductUrl(Number(imageSelect.value || 0));
+  overlayTime.textContent = `${seconds}s`;
+  overlayGrid.textContent = `${grid}×${grid}`;
+  overlayCopy.textContent = `You completed “${currentName}” in ${moves} moves and ${seconds} seconds.`;
+  
+  // FIX QUI: Impostiamo l'URL e forziamo il target
+  shopBtn.href = pUrl;
+  shopBtn.target = "_top"; 
+  
   statusPill.textContent = "Completed";
   overlay.classList.add("show");
   pulseVibrate();
-}}
+}
 
 function newGame() {{
   solved = false;
