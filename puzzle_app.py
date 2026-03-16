@@ -10,26 +10,31 @@ st.set_page_config(page_title="Blululi Puzzle Studio", page_icon="🧩", layout=
 st.markdown(
     """
     <style>
-      /* Nasconde l'header e il menu standard */
-      [data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer, header {
-        visibility: hidden !important;
-        height: 0 !important;
-        display: none !important;
-      }
-      
-      /* Forza la sparizione del footer "Built with Streamlit" nell'embed */
-      .stAppDeployButton, .viewerBadge_container__1QSob, .StyledExternalLink {
+      /* 1. Nasconde Header, Toolbar e Footer ufficiali */
+      [data-testid="stHeader"], [data-testid="stToolbar"], footer {
         display: none !important;
       }
 
-      /* Rimuove lo spazio bianco che Streamlit lascia in fondo */
-      .main .block-container {
-        padding-bottom: 0rem !important;
+      /* 2. Nasconde il badge "Built with Streamlit" e il tasto Fullscreen */
+      .stAppDeployButton, 
+      [data-testid="stStatusWidget"],
+      .viewerBadge_container__1QSob,
+      .st-emotion-cache-zq59db { 
+        display: none !important; 
       }
-      
-      /* Nasconde l'elemento specifico del footer in versione mobile/embed */
-      footer {
-        display: none !important;
+
+      /* 3. Rimuove il padding dell'app per non avere scroll interni inutili */
+      .main .block-container {
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+
+      /* 4. Nasconde il link esterno che appare in basso a destra negli embed */
+      #StyledExternalLink { display: none !important; }
+
+      /* 5. FIX RESPONSIVENESS: Evita che l'iframe interno tagli il gioco */
+      iframe {
+        border: none !important;
       }
     </style>
     """,
