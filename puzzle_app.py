@@ -13,106 +13,93 @@ st.set_page_config(
     layout="wide",
 )
 
+# hide streamlit UI
 st.markdown(
-    """
-    <style>
-    header, footer { visibility: hidden !important; }
-    [data-testid="stToolbar"],
-    [data-testid="stHeader"],
-    [data-testid="stStatusWidget"],
-    [data-testid="stDecoration"] {
-        display: none !important;
-    }
+"""
+<style>
+header, footer {visibility:hidden;}
+[data-testid="stToolbar"],
+[data-testid="stHeader"],
+[data-testid="stStatusWidget"],
+[data-testid="stDecoration"]{
+display:none;
+}
 
-    html, body, [data-testid="stAppViewContainer"], .stApp {
-        margin: 0 !important;
-        padding: 0 !important;
-        background: transparent !important;
-    }
+[data-testid="stAppViewContainer"],
+.main .block-container{
+padding:0 !important;
+margin:0 !important;
+max-width:100% !important;
+}
 
-    [data-testid="stAppViewBlockContainer"],
-    .main .block-container {
-        padding: 0 !important;
-        margin: 0 !important;
-        max-width: 100% !important;
-    }
+.stApp{
+background:transparent;
+}
 
-    iframe {
-        border: 0 !important;
-        display: block !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
+iframe{
+border:none !important;
+margin:0;
+padding:0;
+}
+</style>
+""",
+unsafe_allow_html=True
 )
 
 IMAGE_FOLDER = Path("images")
-HTML_FILE = Path("puzzle_app.html")
 
+def encode_image(path: Path):
 
-PRODUCTS = [
-    "https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-art-1",
-    "https://blululi.com/collections/t-shirts/products/colorful-mandala-geometric-t-shirt",
-    "https://blululi.com/collections/t-shirts/products/vibrant-mandala-tee-intricate-art-design",
-    "https://blululi.com/products/vibrant-mandala-tee-colorful-intricate-2",
-    "https://blululi.com/products/spun-polyester-square-pillowcase-mandala-art-original-fine-art-hand-drawn-dark-charcoal-blue-1",
-    "https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-art",
-    "https://blululi.com/products/rainbow-mandala-womens-short-sleeve-t-shirt-2",
-    "https://blululi.com/collections/t-shirts/products/intricate-mandala-t-shirt-colorful-geometric-design",
-    "https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-intricate-1",
-    "https://blululi.com/products/one-shoulder-dress-with-hand-drawn-mandala-design-black-with-orange-red-and-gold-accents",
-    "https://blululi.com/collections/kitchen-decor/products/mandala-art-15oz-ceramic-mug-perfect-for-coffee-tea-lovers-2",
-    "https://blululi.com/products/colorful-mandala-tote-bag-vibrant-boho-all-over-print-beach-market-tote",
-    "https://blululi.com/products/colorful-mandala-tote-bag-boho-psychedelic-all-over-print",
-]
-
-
-def image_to_data_uri(path: Path, max_dim: int = 1200, quality: int = 85) -> dict[str, str]:
     with Image.open(path) as src:
         img = src.convert("RGB")
-        img.thumbnail((max_dim, max_dim))
-        buf = io.BytesIO()
-        img.save(buf, format="JPEG", quality=quality, optimize=True)
+        img.thumbnail((1600,1600))
 
-    encoded = base64.b64encode(buf.getvalue()).decode("utf-8")
+        buffer = io.BytesIO()
+        img.save(buffer,"JPEG",quality=90,optimize=True)
+
+    encoded = base64.b64encode(buffer.getvalue()).decode()
+
     return {
-        "name": path.stem.replace("_", " ").replace("-", " ").title(),
-        "url": f"data:image/jpeg;base64,{encoded}",
+        "name": path.stem.replace("_"," ").replace("-"," ").title(),
+        "url": f"data:image/jpeg;base64,{encoded}"
     }
 
 
-def build_assets(folder: Path) -> list[dict[str, str]]:
-    valid_suffixes = {".png", ".jpg", ".jpeg", ".webp"}
-    image_paths = sorted(p for p in folder.iterdir() if p.suffix.lower() in valid_suffixes)
-    return [image_to_data_uri(p) for p in image_paths]
+images = sorted(
+    p for p in IMAGE_FOLDER.iterdir()
+    if p.suffix.lower() in {".jpg",".jpeg",".png",".webp"}
+)
 
+assets = [encode_image(p) for p in images]
 
-if not IMAGE_FOLDER.exists() or not IMAGE_FOLDER.is_dir():
-    st.error("Folder ./images not found")
-    st.stop()
+products = [
+"https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-art-1",
+"https://blululi.com/collections/t-shirts/products/colorful-mandala-geometric-t-shirt",
+"https://blululi.com/collections/t-shirts/products/vibrant-mandala-tee-intricate-art-design",
+"https://blululi.com/products/vibrant-mandala-tee-colorful-intricate-2",
+"https://blululi.com/products/spun-polyester-square-pillowcase-mandala-art-original-fine-art-hand-drawn-dark-charcoal-blue-1",
+"https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-art",
+"https://blululi.com/products/rainbow-mandala-womens-short-sleeve-t-shirt-2",
+"https://blululi.com/collections/t-shirts/products/intricate-mandala-t-shirt-colorful-geometric-design",
+"https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-intricate-1",
+"https://blululi.com/products/one-shoulder-dress-with-hand-drawn-mandala-design-black-with-orange-red-and-gold-accents",
+"https://blululi.com/collections/kitchen-decor/products/mandala-art-15oz-ceramic-mug-perfect-for-coffee-tea-lovers-2",
+"https://blululi.com/products/colorful-mandala-tote-bag-vibrant-boho-all-over-print-beach-market-tote",
+"https://blululi.com/products/colorful-mandala-tote-bag-boho-psychedelic-all-over-print",
+]
 
-if not HTML_FILE.exists():
-    st.error("Missing puzzle_app.html")
-    st.stop()
+html = Path("puzzle_app.html").read_text()
 
-assets = build_assets(IMAGE_FOLDER)
+html = html.replace(
+"__ASSETS__", json.dumps(assets)
+)
 
-if not assets:
-    st.error("No images found inside ./images")
-    st.stop()
-
-html_template = HTML_FILE.read_text(encoding="utf-8")
-html = (
-    html_template
-    .replace("__ASSETS_JSON__", json.dumps(assets))
-    .replace("__PRODUCTS_JSON__", json.dumps(PRODUCTS))
+html = html.replace(
+"__PRODUCTS__", json.dumps(products)
 )
 
 st.components.v1.html(
-    html,
-    height=1600,
-    scrolling=True,
+html,
+height=1300,
+scrolling=True
 )
