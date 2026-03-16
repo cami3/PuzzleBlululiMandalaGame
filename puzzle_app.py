@@ -1147,4 +1147,4 @@ newGame();
 </html>
 """
 
-st.components.v1.html(components_html, height=1500, scrolling=False)
+st.components.v1.html(components_html, height=2500, scrolling=False)
