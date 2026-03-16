@@ -21,15 +21,6 @@ margin:auto;
 padding:20px;
 }
 
-header{
-display:flex;
-align-items:center;
-gap:10px;
-font-weight:700;
-font-size:20px;
-margin-bottom:20px;
-}
-
 .layout{
 display:grid;
 grid-template-columns:320px 1fr;
@@ -37,15 +28,13 @@ gap:20px;
 }
 
 @media(max-width:900px){
-.layout{
-grid-template-columns:1fr;
-}
+.layout{grid-template-columns:1fr;}
 }
 
 .panel{
 background:white;
 padding:20px;
-border-radius:20px;
+border-radius:16px;
 box-shadow:0 10px 30px rgba(0,0,0,.08);
 }
 
@@ -53,13 +42,12 @@ box-shadow:0 10px 30px rgba(0,0,0,.08);
 display:grid;
 gap:2px;
 aspect-ratio:1/1;
-background:white;
-border-radius:16px;
+border-radius:12px;
 overflow:hidden;
 }
 
 .tile{
-background-size:cover;
+background-repeat:no-repeat;
 cursor:pointer;
 }
 
@@ -71,14 +59,8 @@ font-weight:700;
 cursor:pointer;
 }
 
-.primary{
-background:#6d28d9;
-color:white;
-}
-
-.secondary{
-background:#eee;
-}
+.primary{background:#6d28d9;color:white;}
+.secondary{background:#eee;}
 
 .overlay{
 position:fixed;
@@ -86,18 +68,15 @@ inset:0;
 display:none;
 align-items:center;
 justify-content:center;
-background:rgba(0,0,0,.5);
+background:rgba(0,0,0,.6);
 }
 
-.overlay.show{
-display:flex;
-}
+.overlay.show{display:flex;}
 
 .overlay-box{
 background:white;
 padding:30px;
 border-radius:20px;
-max-width:420px;
 text-align:center;
 }
 
@@ -109,9 +88,7 @@ text-align:center;
 
 <div class="app">
 
-<header>
-🧩 Blululi Puzzle Studio
-</header>
+<h2>🧩 Blululi Puzzle Studio</h2>
 
 <div class="layout">
 
@@ -119,6 +96,8 @@ text-align:center;
 
 <label>Artwork</label>
 <select id="imageSelect"></select>
+
+<br><br>
 
 <label>Difficulty</label>
 <input id="difficulty" type="range" min="2" max="8" value="4">
@@ -149,9 +128,7 @@ text-align:center;
 <p id="overlayCopy"></p>
 
 <a id="shopBtn" target="_blank">
-
 <button class="primary">Shop This Design</button>
-
 </a>
 
 <br><br>
@@ -167,13 +144,13 @@ text-align:center;
 const images = __ASSETS__;
 const products = __PRODUCTS__;
 
-const board = document.getElementById("board");
-const imageSelect = document.getElementById("imageSelect");
-const difficulty = document.getElementById("difficulty");
+const board = document.getElementById("board")
+const imageSelect = document.getElementById("imageSelect")
+const difficulty = document.getElementById("difficulty")
 
-let grid = 4
-let arrangement = []
-let moves = 0
+let grid=4
+let arrangement=[]
+let currentImage=images[0].url
 
 function safeProductUrl(index){
 return products[index] || products[products.length-1]
@@ -198,15 +175,11 @@ function shuffleArray(a){
 const arr=[...a]
 
 for(let i=arr.length-1;i>0;i--){
-
 const j=Math.floor(Math.random()*(i+1))
-
 [arr[i],arr[j]]=[arr[j],arr[i]]
-
 }
 
 return arr
-
 }
 
 function renderBoard(){
@@ -215,15 +188,23 @@ board.innerHTML=""
 
 board.style.gridTemplateColumns=`repeat(${grid},1fr)`
 
-arrangement.forEach((piece,i)=>{
+const size=board.clientWidth
+const tileSize=size/grid
+
+arrangement.forEach((piece,index)=>{
 
 const tile=document.createElement("div")
-
 tile.className="tile"
 
-tile.style.backgroundImage=`url(${images[piece].url})`
+tile.style.backgroundImage=`url(${currentImage})`
+tile.style.backgroundSize=`${size}px ${size}px`
 
-tile.onclick=()=>swap(i)
+const row=Math.floor(piece/grid)
+const col=piece%grid
+
+tile.style.backgroundPosition=`${-col*tileSize}px ${-row*tileSize}px`
+
+tile.onclick=()=>swap(index)
 
 board.appendChild(tile)
 
@@ -237,10 +218,7 @@ if(i===0)return
 
 [arrangement[i],arrangement[0]]=[arrangement[0],arrangement[i]]
 
-moves++
-
 renderBoard()
-
 checkSolved()
 
 }
@@ -252,11 +230,9 @@ const ok=arrangement.every((v,i)=>v===i)
 if(!ok)return
 
 const overlay=document.getElementById("overlay")
-
 overlay.classList.add("show")
 
 const idx=imageSelect.value
-
 document.getElementById("shopBtn").href=safeProductUrl(idx)
 
 }
@@ -273,18 +249,24 @@ renderBoard()
 
 }
 
-document.getElementById("shuffleBtn").onclick=newGame
+imageSelect.addEventListener("change",()=>{
 
-document.getElementById("againBtn").onclick=()=>{
+const idx=Number(imageSelect.value)
 
-document.getElementById("overlay").classList.remove("show")
+currentImage=images[idx].url
 
 newGame()
 
+})
+
+document.getElementById("shuffleBtn").onclick=newGame
+
+document.getElementById("againBtn").onclick=()=>{
+document.getElementById("overlay").classList.remove("show")
+newGame()
 }
 
 populateImages()
-
 newGame()
 
 </script>
