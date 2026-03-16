@@ -730,7 +730,7 @@ components_html = f"""
                 </div>
 
                 <div class="overlay-actions">
-                  <a id="shopBtn" rel="noopener noreferrer" class="cta-link btn-success">Shop This Design</a>
+                  <a id="shopBtn" target="_top" rel="noopener noreferrer" class="cta-link btn-success">Shop This Design</a>
                   <button class="btn-primary" id="againBtn">Play Again</button>
                   <button class="btn-secondary" id="closeOverlayBtn">Close</button>
                 </div>
@@ -1049,7 +1049,7 @@ function checkSolved() {{
   overlayTime.textContent = `${{seconds}}s`;
   overlayGrid.textContent = `${{grid}}×${{grid}}`;
   overlayCopy.textContent = `You completed “${{currentName}}” in ${{moves}} moves and ${{seconds}} seconds.`;
-  shopBtn.href = safeProductUrl(Number(imageSelect.value || 0));
+  shopBtn.href = safeProductUrl(idx);
   statusPill.textContent = "Completed";
   overlay.classList.add("show");
   pulseVibrate();
