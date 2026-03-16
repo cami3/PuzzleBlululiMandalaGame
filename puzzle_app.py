@@ -1160,6 +1160,6 @@ newGame();
 
 st.components.v1.html(
     components_html,
-    height=0,
+    height=1500,
     scrolling=True
 )
