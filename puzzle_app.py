@@ -73,19 +73,19 @@ assets_json = json.dumps(assets)
 # Keep product URLs aligned with your images order.
 # If you add more images than products, the last URL will be reused.
 products = [
-    "/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-art-1",
-    "/collections/t-shirts/products/colorful-mandala-geometric-t-shirt",
-    "/collections/t-shirts/products/vibrant-mandala-tee-intricate-art-design",
-    "/products/vibrant-mandala-tee-colorful-intricate-2",
-    "/products/spun-polyester-square-pillowcase-mandala-art-original-fine-art-hand-drawn-dark-charcoal-blue-1",
-    "/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-art",
-    "/products/rainbow-mandala-womens-short-sleeve-t-shirt-2",
-    "/collections/t-shirts/products/intricate-mandala-t-shirt-colorful-geometric-design",
-    "/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-intricate-1",
-    "/products/one-shoulder-dress-with-hand-drawn-mandala-design-black-with-orange-red-and-gold-accents",
-    "/collections/kitchen-decor/products/mandala-art-15oz-ceramic-mug-perfect-for-coffee-tea-lovers-2",
-    "/products/colorful-mandala-tote-bag-vibrant-boho-all-over-print-beach-market-tote",
-    "/products/colorful-mandala-tote-bag-boho-psychedelic-all-over-print",
+    "https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-art-1",
+    "https://blululi.com/collections/t-shirts/products/colorful-mandala-geometric-t-shirt",
+    "https://blululi.com/collections/t-shirts/products/vibrant-mandala-tee-intricate-art-design",
+    "https://blululi.com/products/vibrant-mandala-tee-colorful-intricate-2",
+    "https://blululi.com/products/spun-polyester-square-pillowcase-mandala-art-original-fine-art-hand-drawn-dark-charcoal-blue-1",
+    "https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-art",
+    "https://blululi.com/products/rainbow-mandala-womens-short-sleeve-t-shirt-2",
+    "https://blululi.com/collections/t-shirts/products/intricate-mandala-t-shirt-colorful-geometric-design",
+    "https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-intricate-1",
+    "https://blululi.com/products/one-shoulder-dress-with-hand-drawn-mandala-design-black-with-orange-red-and-gold-accents",
+    "https://blululi.com/collections/kitchen-decor/products/mandala-art-15oz-ceramic-mug-perfect-for-coffee-tea-lovers-2",
+    "https://blululi.com/products/colorful-mandala-tote-bag-vibrant-boho-all-over-print-beach-market-tote",
+    "https://blululi.com/products/colorful-mandala-tote-bag-boho-psychedelic-all-over-print",
 ]
 
 products_json = json.dumps(products)
