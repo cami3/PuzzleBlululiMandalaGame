@@ -824,13 +824,13 @@ function safeProductUrl(index) {{
   return products[index] || products[products.length - 1] || "https://blululi.com";
 }}
 
-function openProduct(url){
-  if (window.top) {
+function openProduct(url){{
+  if (window.top) {{
     window.top.location.href = url
-  } else {
+  }} else {{
     window.location.href = url
-  }
-}
+  }}
+}}
 
 function populateImages() {{
   imageSelect.innerHTML = "";
