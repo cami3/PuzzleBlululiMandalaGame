@@ -646,7 +646,7 @@ components_html = f"""
             <div class="control">
               <label class="label" for="imageSelect">Artwork</label>
               <select id="imageSelect"></select>
-              <div class="helper">Each design is linked to its matching product page.</div>
+              <div class="helper">Select Your Creative Digital Design.</div>
             </div>
 
             <div class="control">
