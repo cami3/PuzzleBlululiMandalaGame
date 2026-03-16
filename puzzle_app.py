@@ -730,7 +730,7 @@ components_html = f"""
                 </div>
 
                 <div class="overlay-actions">
-                  <a id="shopBtn" target="_top" rel="noopener noreferrer" class="cta-link btn-success">Shop This Design</a>
+                  <a id="shopBtn" target="_top" class="cta-link btn-success">Shop This Design</a>
                   <button class="btn-primary" id="againBtn">Play Again</button>
                   <button class="btn-secondary" id="closeOverlayBtn">Close</button>
                 </div>
@@ -824,15 +824,7 @@ function safeProductUrl(index) {{
   return products[index] || products[products.length - 1] || "https://blululi.com";
 }}
 
-function openProduct(url) {{
-  if (!url) return;
-  window.open(url, "_blank", "noopener,noreferrer");
-}}
 
-shopBtn.addEventListener("click", (e) => {{
-  e.preventDefault();
-  openProduct(shopBtn.href);
-}});
 
 function populateImages() {{
   imageSelect.innerHTML = "";
@@ -864,9 +856,7 @@ function setPreview() {{
   currentName = images[idx]?.name || "Mandala";
   previewImg.src = currentImage;
   previewName.textContent = currentName;
-  shopBtn.onclick = () => {{
-  window.location.href = safeProductUrl(idx)
-}}
+  shopBtn.href = safeProductUrl(idx);
 }}
 
 function resetStats() {{
