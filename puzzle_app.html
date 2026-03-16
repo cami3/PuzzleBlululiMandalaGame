@@ -3,9 +3,9 @@
 <head>
 
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>Blululi Puzzle Studio</title>
+<title>Blululi Puzzle</title>
 
 <style>
 
@@ -16,7 +16,7 @@ background:#f5f7ff;
 }
 
 .app{
-max-width:1200px;
+max-width:1100px;
 margin:auto;
 padding:20px;
 }
@@ -105,14 +105,11 @@ text-align:center;
 <br><br>
 
 <button class="primary" id="shuffleBtn">Shuffle</button>
-<button class="secondary" id="resetBtn">Solved</button>
 
 </div>
 
 <div class="panel">
-
 <div id="board"></div>
-
 </div>
 
 </div>
@@ -124,8 +121,6 @@ text-align:center;
 <div class="overlay-box">
 
 <h2>Puzzle Complete</h2>
-
-<p id="overlayCopy"></p>
 
 <a id="shopBtn" target="_blank">
 <button class="primary">Shop This Design</button>
@@ -144,9 +139,9 @@ text-align:center;
 const images = __ASSETS__;
 const products = __PRODUCTS__;
 
-const board = document.getElementById("board")
-const imageSelect = document.getElementById("imageSelect")
-const difficulty = document.getElementById("difficulty")
+const board=document.getElementById("board")
+const imageSelect=document.getElementById("imageSelect")
+const difficulty=document.getElementById("difficulty")
 
 let grid=4
 let arrangement=[]
@@ -163,14 +158,13 @@ images.forEach((img,i)=>{
 const opt=document.createElement("option")
 opt.value=i
 opt.textContent=img.name
-
 imageSelect.appendChild(opt)
 
 })
 
 }
 
-function shuffleArray(a){
+function shuffle(a){
 
 const arr=[...a]
 
@@ -185,7 +179,6 @@ return arr
 function renderBoard(){
 
 board.innerHTML=""
-
 board.style.gridTemplateColumns=`repeat(${grid},1fr)`
 
 const size=board.clientWidth
@@ -225,15 +218,15 @@ checkSolved()
 
 function checkSolved(){
 
-const ok=arrangement.every((v,i)=>v===i)
+if(arrangement.every((v,i)=>v===i)){
 
-if(!ok)return
-
-const overlay=document.getElementById("overlay")
-overlay.classList.add("show")
+document.getElementById("overlay").classList.add("show")
 
 const idx=imageSelect.value
+
 document.getElementById("shopBtn").href=safeProductUrl(idx)
+
+}
 
 }
 
@@ -243,7 +236,7 @@ grid=Number(difficulty.value)
 
 const total=grid*grid
 
-arrangement=shuffleArray([...Array(total).keys()])
+arrangement=shuffle([...Array(total).keys()])
 
 renderBoard()
 
@@ -251,10 +244,7 @@ renderBoard()
 
 imageSelect.addEventListener("change",()=>{
 
-const idx=Number(imageSelect.value)
-
-currentImage=images[idx].url
-
+currentImage=images[imageSelect.value].url
 newGame()
 
 })
