@@ -790,8 +790,8 @@ components_html = f"""
   </div>
 
 <script>
-const images = {assets_json};
-const products = {products_json};
+const images = {{assets_json}};  // <-- Doppia graffa
+const products = {{products_json}}; // <-- Doppia graffa
 
 images.forEach(img => {{
   const preloaded = new Image();
@@ -967,9 +967,9 @@ function renderBoard() {{
 
     const pos = piecePosition(pieceId);
 
-    tile.style.backgroundImage = `url("${{currentImage}}")`;
-    tile.style.backgroundSize = `${{size}}px ${{size}}px`;
-    tile.style.backgroundPosition = `${{-pos.col * one}}px ${{-pos.row * one}}px`;
+    tile.style.backgroundImage = `url("${{currentImage}}")`; // <-- Doppia graffa
+    tile.style.backgroundSize = `${{size}}px ${{size}}px`;    // <-- Doppia graffa
+    tile.style.backgroundPosition = `${{-pos.col * one}}px ${{-pos.row * one}}px`; // <-- Doppia graffa
 
     tile.addEventListener("click", () => onTileClick(boardIndex));
 
