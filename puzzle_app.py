@@ -6,16 +6,9 @@ from pathlib import Path
 import streamlit as st
 from PIL import Image
 
+st.set_page_config(page_title="Blululi Puzzle Studio", page_icon="🧩", layout="wide")
 
-st.set_page_config(
-    page_title="Blululi Puzzle Studio",
-    page_icon="🧩",
-    layout="wide",
-)
-
-# hide streamlit UI
-st.markdown(
-"""
+st.markdown("""
 <style>
 header, footer {visibility:hidden;}
 [data-testid="stToolbar"],
@@ -32,25 +25,18 @@ margin:0 !important;
 max-width:100% !important;
 }
 
-.stApp{
-background:transparent;
-}
-
 iframe{
 border:none !important;
-margin:0;
-padding:0;
 }
 </style>
-""",
-unsafe_allow_html=True
-)
+""", unsafe_allow_html=True)
 
 IMAGE_FOLDER = Path("images")
 
-def encode_image(path: Path):
+def encode_image(path):
 
     with Image.open(path) as src:
+
         img = src.convert("RGB")
         img.thumbnail((1600,1600))
 
@@ -63,7 +49,6 @@ def encode_image(path: Path):
         "name": path.stem.replace("_"," ").replace("-"," ").title(),
         "url": f"data:image/jpeg;base64,{encoded}"
     }
-
 
 images = sorted(
     p for p in IMAGE_FOLDER.iterdir()
@@ -85,21 +70,12 @@ products = [
 "https://blululi.com/products/one-shoulder-dress-with-hand-drawn-mandala-design-black-with-orange-red-and-gold-accents",
 "https://blululi.com/collections/kitchen-decor/products/mandala-art-15oz-ceramic-mug-perfect-for-coffee-tea-lovers-2",
 "https://blululi.com/products/colorful-mandala-tote-bag-vibrant-boho-all-over-print-beach-market-tote",
-"https://blululi.com/products/colorful-mandala-tote-bag-boho-psychedelic-all-over-print",
+"https://blululi.com/products/colorful-mandala-tote-bag-boho-psychedelic-all-over-print"
 ]
 
 html = Path("puzzle_app.html").read_text()
 
-html = html.replace(
-"__ASSETS__", json.dumps(assets)
-)
+html = html.replace("__ASSETS__", json.dumps(assets))
+html = html.replace("__PRODUCTS__", json.dumps(products))
 
-html = html.replace(
-"__PRODUCTS__", json.dumps(products)
-)
-
-st.components.v1.html(
-html,
-height=1300,
-scrolling=True
-)
+st.components.v1.html(html, height=1300, scrolling=True)
