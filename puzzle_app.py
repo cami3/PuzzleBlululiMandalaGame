@@ -7,21 +7,29 @@ import streamlit as st
 from PIL import Image
 
 st.set_page_config(page_title="Blululi Puzzle Studio", page_icon="🧩", layout="wide")
-
 st.markdown(
     """
     <style>
+      /* Nasconde l'header e il menu standard */
       [data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer, header {
-        visibility: hidden;
-        height: 0;
+        visibility: hidden !important;
+        height: 0 !important;
+        display: none !important;
       }
-      .block-container {
-        max-width: 1320px;
-        padding-top: 0.2rem;
-        padding-bottom: 0.2rem;
+      
+      /* Forza la sparizione del footer "Built with Streamlit" nell'embed */
+      .stAppDeployButton, .viewerBadge_container__1QSob, .StyledExternalLink {
+        display: none !important;
       }
-      iframe {
-        border: 0 !important;
+
+      /* Rimuove lo spazio bianco che Streamlit lascia in fondo */
+      .main .block-container {
+        padding-bottom: 0rem !important;
+      }
+      
+      /* Nasconde l'elemento specifico del footer in versione mobile/embed */
+      footer {
+        display: none !important;
       }
     </style>
     """,
