@@ -11,7 +11,7 @@ st.set_page_config(page_title="Blululi Puzzle Studio", page_icon="🧩", layout=
 st.markdown(
     """
     <style>
-      [data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer {
+      [data-testid="stHeader"], [data-testid="stToolbar"], #MainMenu, footer, header {
         visibility: hidden;
         height: 0;
       }
