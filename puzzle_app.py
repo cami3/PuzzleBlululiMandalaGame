@@ -1049,8 +1049,7 @@ function checkSolved() {{
   overlayTime.textContent = `${{seconds}}s`;
   overlayGrid.textContent = `${{grid}}×${{grid}}`;
   overlayCopy.textContent = `You completed “${{currentName}}” in ${{moves}} moves and ${{seconds}} seconds.`;
-  shopBtn.href = safeProductUrl(idx);
-  statusPill.textContent = "Completed";
+shopBtn.href = safeProductUrl(Number(imageSelect.value || 0));  statusPill.textContent = "Completed";
   overlay.classList.add("show");
   pulseVibrate();
 }}
