@@ -1064,11 +1064,12 @@ function checkSolved() {{
   
   finalImage.src = currentImage;
   overlayMoves.textContent = String(moves);
-  overlayTime.textContent = `${seconds}s`;
-  overlayGrid.textContent = `${grid}×${grid}`;
-  overlayCopy.textContent = `You completed “${currentName}” in ${moves} moves and ${seconds} seconds.`;
   
-  // FIX QUI: Impostiamo l'URL e forziamo il target
+  // Nota le doppie graffe {{ }} qui sotto: servono per "proteggere" il codice JS da Python
+  overlayTime.textContent = `${{seconds}}s`; 
+  overlayGrid.textContent = `${{grid}}×${{grid}}`;
+  overlayCopy.textContent = `You completed "${{currentName}}" in ${{moves}} moves and ${{seconds}} seconds.`;
+  
   shopBtn.href = pUrl;
   shopBtn.target = "_top"; 
   
