@@ -6,30 +6,26 @@ from pathlib import Path
 import streamlit as st
 from PIL import Image
 
-st.set_page_config(page_title="Puzzle Studio", layout="wide")
+st.set_page_config(layout="wide")
 
 IMAGE_FOLDER = Path("images")
 
-if not IMAGE_FOLDER.exists():
-    st.error("Missing ./images folder")
-    st.stop()
-
-image_paths = [p for p in IMAGE_FOLDER.iterdir() if p.suffix.lower() in [".jpg", ".png", ".jpeg", ".webp"]]
-
-def encode_image(path):
+def encode(path):
     with Image.open(path) as img:
         img = img.convert("RGB")
+        w, h = img.size
 
         buf = io.BytesIO()
         img.save(buf, format="JPEG", quality=90)
-        encoded = base64.b64encode(buf.getvalue()).decode()
 
     return {
         "name": path.stem,
-        "url": f"data:image/jpeg;base64,{encoded}"
+        "url": "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode(),
+        "w": w,
+        "h": h
     }
 
-assets = [encode_image(p) for p in image_paths]
+images = [encode(p) for p in IMAGE_FOLDER.iterdir() if p.suffix.lower() in [".jpg",".png",".jpeg",".webp"]]
 
 html = f"""
 <!DOCTYPE html>
@@ -40,21 +36,23 @@ html = f"""
 
 body {{
   margin:0;
-  font-family: sans-serif;
-  background: #f5f5f5;
+  font-family: Inter, sans-serif;
+  background:#0f172a;
+  color:white;
 }}
 
-.container {{
+.app {{
   display:flex;
-  gap:20px;
-  padding:20px;
+  height:100vh;
 }}
 
 .sidebar {{
-  width:260px;
+  width:280px;
+  background:#111827;
+  padding:20px;
 }}
 
-.board-container {{
+.main {{
   flex:1;
   display:flex;
   justify-content:center;
@@ -64,41 +62,40 @@ body {{
 #board {{
   display:grid;
   gap:2px;
-  background:white;
+  background:#020617;
   padding:4px;
-  border-radius:12px;
-
-  /* 🔥 FIX: non più quadrato forzato */
-  width: min(90vw, 900px);
-  height: auto;
-  aspect-ratio: auto;
+  border-radius:16px;
 }}
 
 .tile {{
   background-repeat:no-repeat;
-  background-size: contain; /* 🔥 FIX PRINCIPALE */
-  background-position:center;
   cursor:pointer;
   border-radius:4px;
+  transition: transform .1s;
 }}
 
-img.preview {{
+.tile:hover {{
+  transform: scale(1.02);
+}}
+
+select, input, button {{
   width:100%;
-  border-radius:12px;
+  margin-top:10px;
+  padding:10px;
+  border-radius:8px;
+  border:none;
 }}
 
 button {{
-  width:100%;
-  padding:10px;
-  margin-top:10px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
+  background:#7c3aed;
+  color:white;
+  font-weight:bold;
 }}
 
-.primary {{
-  background:#6d28d9;
-  color:white;
+.preview {{
+  width:100%;
+  margin-top:20px;
+  border-radius:10px;
 }}
 
 </style>
@@ -106,21 +103,19 @@ button {{
 
 <body>
 
-<div class="container">
+<div class="app">
 
 <div class="sidebar">
-  <h3>Choose Image</h3>
-  <select id="imageSelect"></select>
+  <h2>Puzzle</h2>
 
-  <h3>Difficulty</h3>
-  <input type="range" min="2" max="8" value="4" id="difficulty">
-
-  <button class="primary" onclick="newGame()">Shuffle</button>
+  <select id="imgSelect"></select>
+  <input type="range" id="diff" min="2" max="8" value="4">
+  <button onclick="newGame()">Shuffle</button>
 
   <img id="preview" class="preview">
 </div>
 
-<div class="board-container">
+<div class="main">
   <div id="board"></div>
 </div>
 
@@ -128,88 +123,86 @@ button {{
 
 <script>
 
-const images = {json.dumps(assets)}
+const images = {json.dumps(images)}
 
 const board = document.getElementById("board")
-const select = document.getElementById("imageSelect")
-const difficulty = document.getElementById("difficulty")
+const select = document.getElementById("imgSelect")
+const diff = document.getElementById("diff")
 const preview = document.getElementById("preview")
 
 let grid = 4
-let arrangement = []
-let currentImage = ""
+let arr = []
+let selected = null
+let current = images[0]
 
 function init() {{
-  images.forEach((img, i) => {{
-    const opt = document.createElement("option")
-    opt.value = i
-    opt.textContent = img.name
-    select.appendChild(opt)
+  images.forEach((img,i)=>{{
+    let o=document.createElement("option")
+    o.value=i
+    o.textContent=img.name
+    select.appendChild(o)
   }})
-
-  select.value = 0
   updateImage()
   newGame()
 }}
 
-function updateImage() {{
-  const img = images[select.value]
-  currentImage = img.url
-  preview.src = currentImage
+function updateImage(){{
+  current = images[select.value]
+  preview.src = current.url
 }}
 
-select.addEventListener("change", () => {{
-  updateImage()
-  newGame()
-}})
+select.onchange = ()=>{{ updateImage(); newGame() }}
+diff.onchange = ()=>{{ grid = Number(diff.value); newGame() }}
 
-difficulty.addEventListener("change", () => {{
-  grid = Number(difficulty.value)
-  newGame()
-}})
-
-function makeArrangement() {{
-  let arr = Array.from({{length:grid*grid}}, (_,i)=>i)
-  return arr.sort(()=>Math.random()-0.5)
+function shuffle(a){{
+  return a.sort(()=>Math.random()-0.5)
 }}
 
-function render() {{
-  board.innerHTML = ""
-  board.style.gridTemplateColumns = `repeat(${grid},1fr)`
-
-  arrangement.forEach((piece, i) => {{
-    const tile = document.createElement("div")
-    tile.className = "tile"
-
-    tile.style.backgroundImage = `url(${currentImage})`
-
-    const row = Math.floor(piece / grid)
-    const col = piece % grid
-
-    tile.style.backgroundSize = `${grid*100}% ${grid*100}%`
-    tile.style.backgroundPosition = `${col/(grid-1)*100}% ${row/(grid-1)*100}%`
-
-    tile.onclick = () => swap(i)
-
-    board.appendChild(tile)
-  }})
-}}
-
-let selected = null
-
-function swap(i) {{
-  if(selected === null){{
-    selected = i
-    return
-  }}
-
-  [arrangement[selected], arrangement[i]] = [arrangement[i], arrangement[selected]]
-  selected = null
+function newGame(){{
+  arr = shuffle([...Array(grid*grid).keys()])
   render()
 }}
 
-function newGame() {{
-  arrangement = makeArrangement()
+function render(){{
+  board.innerHTML=""
+  board.style.gridTemplateColumns = `repeat(${grid},1fr)`
+
+  // 🔥 PROPORZIONE REALE DELL’IMMAGINE
+  const ratio = current.h / current.w
+
+  const maxW = Math.min(window.innerWidth*0.8, 900)
+  const width = maxW
+  const height = width * ratio
+
+  board.style.width = width + "px"
+  board.style.height = height + "px"
+
+  arr.forEach((p,i)=>{{
+    const t = document.createElement("div")
+    t.className="tile"
+
+    const row = Math.floor(p/grid)
+    const col = p % grid
+
+    t.style.width = "100%"
+    t.style.height = "100%"
+
+    // 🔥 SCALING PERFETTO
+    t.style.backgroundImage = `url(${current.url})`
+    t.style.backgroundSize = `${grid*100}% ${grid*100}%`
+    t.style.backgroundPosition = `${col/(grid-1)*100}% ${row/(grid-1)*100}%`
+
+    t.onclick = ()=>swap(i)
+
+    board.appendChild(t)
+  }})
+}}
+
+function swap(i){{
+  if(selected===null){{ selected=i; return }}
+
+  [arr[selected], arr[i]] = [arr[i], arr[selected]]
+  selected=null
   render()
 }}
 
@@ -221,4 +214,4 @@ init()
 </html>
 """
 
-st.components.v1.html(html, height=900, scrolling=True)
+st.components.v1.html(html, height=900)
