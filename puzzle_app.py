@@ -977,6 +977,7 @@ function renderBoard() {{
 
       const pos = piecePosition(pieceId);
 
+      // 👇 FIX IMPORTANTE
       const bgWidth = imgRatio >= 1 ? size * imgRatio : size;
       const bgHeight = imgRatio < 1 ? size / imgRatio : size;
 
