@@ -60,6 +60,7 @@ if not image_paths:
     st.stop()
 
 IMAGE_TITLES = {
+    "web_rectangula_frame2": "Mandala Frame Pattern I",
     "web_beige_green_plain_colors": "Beige & Green Mandala Balance",
     "web_blue_green_pink_plain_colors": "Blue Green Pink Mandala Harmony",
 
@@ -74,9 +75,8 @@ IMAGE_TITLES = {
     "web_orange_yellow": "Orange Yellow Mandala Sunrise",
     "web_purple": "Purple Mandala Serenity",
     "web_purple_yellow_red": "Purple Yellow Red Mandala Fire",
-
-    "web_rectangula_frame2": "Mandala Frame Pattern II",
-    "web_rectangular_frame": "Mandala Frame Pattern I",
+    
+    "web_rectangular_frame": "Mandala Frame Pattern II",
     "web_rectangular_frame3": "Mandala Frame Pattern III",
 }
 
