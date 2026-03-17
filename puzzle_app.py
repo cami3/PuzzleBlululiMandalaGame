@@ -955,68 +955,56 @@ function piecePosition(pieceId) {{
 }}
 
 function renderBoard() {{
-  board.innerHTML = "";
-  
-  // 1. Ripristiniamo il puntamento diretto all'immagine corrente
-  // Usiamo le percentuali: funzionano sempre, sia per quadrati che per rettangoli
-  const percentage = 100 * grid;
+  board.innerHTML = "";
+  const size = boardSize();
+  const one = tileSize();
 
-  arrangement.forEach((pieceId, boardIndex) => {{
-    const tile = document.createElement("button");
-    tile.type = "button";
-    tile.className = "tile" + (solved ? " solved" : "");
-    tile.dataset.boardIndex = String(boardIndex);
-    tile.dataset.pieceId = String(pieceId);
-    tile.draggable = !solved;
-    tile.setAttribute("aria-label", `Puzzle tile ${{boardIndex + 1}}`);
+  arrangement.forEach((pieceId, boardIndex) => {{
+    const tile = document.createElement("button");
+    tile.type = "button";
+    tile.className = "tile" + (solved ? " solved" : "");
+    tile.dataset.boardIndex = String(boardIndex);
+    tile.dataset.pieceId = String(pieceId);
+    tile.draggable = !solved;
+    tile.setAttribute("aria-label", `Puzzle tile ${{boardIndex + 1}}`);
 
-    // Usiamo la funzione originale che hai nel codice
-    const pos = piecePosition(pieceId);
+    const pos = piecePosition(pieceId);
 
-    tile.style.backgroundImage = `url("${{currentImage}}")`;
-    
-    // Il segreto per non tagliare: background-size 400% (per un 4x4) 
-    // su entrambi i lati. Il tassello prenderà la sua porzione corretta.
-    tile.style.backgroundSize = `${{percentage}}% ${{percentage}}%`;
+    tile.style.backgroundImage = `url("${{currentImage}}")`;
+    tile.style.backgroundSize = `${{size}}px ${{size}}px`;
+    tile.style.backgroundPosition = `${{-pos.col * one}}px ${{-pos.row * one}}px`;
 
-    // Posizionamento basato sulla griglia (0% - 100%)
-    const posX = (pos.col / (grid - 1)) * 100;
-    const posY = (pos.row / (grid - 1)) * 100;
-    
-    tile.style.backgroundPosition = `${{posX}}% ${{posY}}%`;
+    tile.addEventListener("click", () => onTileClick(boardIndex));
 
-    // --- Ricolleghiamo i pezzi per lo SWAP ---
-    tile.addEventListener("click", () => onTileClick(boardIndex));
+    tile.addEventListener("dragstart", () => {{
+      if (solved) return;
+      dragFrom = boardIndex;
+      tile.classList.add("dragging");
+    }});
 
-    tile.addEventListener("dragstart", () => {{
-      if (solved) return;
-      dragFrom = boardIndex;
-      tile.classList.add("dragging");
-    }});
+    tile.addEventListener("dragend", () => {{
+      tile.classList.remove("dragging");
+      dragFrom = null;
+    }});
 
-    tile.addEventListener("dragend", () => {{
-      tile.classList.remove("dragging");
-      dragFrom = null;
-    }});
+    tile.addEventListener("dragover", (e) => {{
+      if (!solved) e.preventDefault();
+    }});
 
-    tile.addEventListener("dragover", (e) => {{
-      if (!solved) e.preventDefault();
-    }});
+    tile.addEventListener("drop", (e) => {{
+      e.preventDefault();
+      if (solved) return;
+      if (dragFrom === null || dragFrom === boardIndex) return;
+      swapTiles(dragFrom, boardIndex);
+      dragFrom = null;
+    }});
 
-    tile.addEventListener("drop", (e) => {{
-      e.preventDefault();
-      if (solved) return;
-      if (dragFrom === null || dragFrom === boardIndex) return;
-      swapTiles(dragFrom, boardIndex);
-      dragFrom = null;
-    }});
+    if (selectedIndex === boardIndex) {{
+      tile.classList.add("selected");
+    }}
 
-    if (selectedIndex === boardIndex) {{
-      tile.classList.add("selected");
-    }}
-
-    board.appendChild(tile);
-  }});
+    board.appendChild(tile);
+  }});
 }}
 
 function onTileClick(boardIndex) {{
