@@ -730,7 +730,7 @@ components_html = f"""
                 </div>
 
                 <div class="overlay-actions">
-                  <a id="shopBtn" class="cta-link btn-success">Shop This Design</a>
+                  <a id="shopBtn" target="_top" class="cta-link btn-success">Shop This Design</a>
                   <button class="btn-primary" id="againBtn">Play Again</button>
                   <button class="btn-secondary" id="closeOverlayBtn">Close</button>
                 </div>
