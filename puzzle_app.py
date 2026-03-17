@@ -727,7 +727,8 @@ components_html = f"""
               <div class="overlay-box">
                 <div class="overlay-badge">Puzzle Complete</div>
                 <h2 class="overlay-title">Mandala completed ✨</h2>
-                <p class="overlay-copy" id="overlayCopy">Discover the product that inspired this artwork. ⭐ 5-Star rated mandala designs by real customers</p>
+                <p> Discover the product that inspired this artwork. ⭐ 5-Star rated mandala designs by real customers </p>
+                <p class="overlay-copy" id="overlayCopy"></p>
                 <img id="finalImage" class="overlay-image" alt="Completed design" />
 
                 <div class="overlay-stats">
