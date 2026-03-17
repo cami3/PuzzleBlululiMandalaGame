@@ -466,7 +466,7 @@ components_html = f"""
   .game-stage {{ position: relative; }}
 
   #board {{
-    width: min(900px, 100%);
+    width: min(900px, 96vw);
     margin: 0 auto;
     aspect-ratio: 1 / 1;
     display: grid;
@@ -637,7 +637,7 @@ components_html = f"""
   @media (max-width: 700px) {{
     .shell {{ padding: 8px; gap: 8px; }}
     .pad, .hero, .board-card {{ padding: 12px; }}
-    #board {{ width: 100%; max-width: 95vw; border-radius: 14px; }}
+    #board {{ width: 100%; max-width: 96vw; border-radius: 14px; }}
     .tile {{ border-radius: 3px; }}
     .status-row, .overlay-stats {{ grid-template-columns: 1fr 1fr; }}
     .overlay-box {{ padding: 18px; }}
@@ -669,7 +669,7 @@ components_html = f"""
         <section class="card pad">
           <div class="controls">
             <div class="control">
-              <label class="label" for="imageSelect">Choose a Mandala</label>
+              <label class="label" for="imageSelect">Choose a Mandala Puzzle</label>
               <select id="imageSelect"></select>
               <div class="helper">Select Your Creative Digital Design.</div>
             </div>
@@ -736,7 +736,7 @@ components_html = f"""
               <div class="overlay-box">
                 <div class="overlay-badge">Puzzle Complete</div>
                 <h2 class="overlay-title">Mandala completed ✨</h2>
-                <p> Discover the product that inspired this artwork. ⭐ 5-Star rated mandala designs by real customers </p>
+                <p> You solved the mandala puzzle! Discover the product inspired by this artwork. ⭐ 5-Star rated mandala designs by real customers </p>
                 <p class="overlay-copy" id="overlayCopy"></p>
                 <img id="finalImage" class="overlay-image" alt="Completed design" />
 
