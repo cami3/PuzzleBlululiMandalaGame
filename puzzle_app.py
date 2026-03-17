@@ -955,56 +955,71 @@ function piecePosition(pieceId) {{
 }}
 
 function renderBoard() {{
-  board.innerHTML = "";
-  const size = boardSize();
-  const one = tileSize();
+  board.innerHTML = "";
 
-  arrangement.forEach((pieceId, boardIndex) => {{
-    const tile = document.createElement("button");
-    tile.type = "button";
-    tile.className = "tile" + (solved ? " solved" : "");
-    tile.dataset.boardIndex = String(boardIndex);
-    tile.dataset.pieceId = String(pieceId);
-    tile.draggable = !solved;
-    tile.setAttribute("aria-label", `Puzzle tile ${{boardIndex + 1}}`);
+  const size = boardSize();
+  const one = tileSize();
 
-    const pos = piecePosition(pieceId);
+  const img = new Image();
+  img.src = currentImage;
 
-    tile.style.backgroundImage = `url("${{currentImage}}")`;
-    tile.style.backgroundSize = `${{size}}px ${{size}}px`;
-    tile.style.backgroundPosition = `${{-pos.col * one}}px ${{-pos.row * one}}px`;
+  img.onload = () => {{
+    const imgRatio = img.width / img.height;
 
-    tile.addEventListener("click", () => onTileClick(boardIndex));
+    arrangement.forEach((pieceId, boardIndex) => {{
+      const tile = document.createElement("button");
+      tile.type = "button";
+      tile.className = "tile" + (solved ? " solved" : "");
+      tile.dataset.boardIndex = String(boardIndex);
+      tile.dataset.pieceId = String(pieceId);
+      tile.draggable = !solved;
+      tile.setAttribute("aria-label", `Puzzle tile ${{boardIndex + 1}}`);
 
-    tile.addEventListener("dragstart", () => {{
-      if (solved) return;
-      dragFrom = boardIndex;
-      tile.classList.add("dragging");
-    }});
+      const pos = piecePosition(pieceId);
 
-    tile.addEventListener("dragend", () => {{
-      tile.classList.remove("dragging");
-      dragFrom = null;
-    }});
+      const bgWidth = imgRatio >= 1 ? size * imgRatio : size;
+      const bgHeight = imgRatio < 1 ? size / imgRatio : size;
 
-    tile.addEventListener("dragover", (e) => {{
-      if (!solved) e.preventDefault();
-    }});
+      tile.style.backgroundImage = `url("${{currentImage}}")`;
+      tile.style.backgroundSize = `${{bgWidth}}px ${{bgHeight}}px`;
 
-    tile.addEventListener("drop", (e) => {{
-      e.preventDefault();
-      if (solved) return;
-      if (dragFrom === null || dragFrom === boardIndex) return;
-      swapTiles(dragFrom, boardIndex);
-      dragFrom = null;
-    }});
+      const offsetX = (pos.col * one) * (bgWidth / size);
+      const offsetY = (pos.row * one) * (bgHeight / size);
 
-    if (selectedIndex === boardIndex) {{
-      tile.classList.add("selected");
-    }}
+      tile.style.backgroundPosition = `${{-offsetX}}px ${{-offsetY}}px`;
 
-    board.appendChild(tile);
-  }});
+      tile.addEventListener("click", () => onTileClick(boardIndex));
+
+      tile.addEventListener("dragstart", () => {{
+        if (solved) return;
+        dragFrom = boardIndex;
+        tile.classList.add("dragging");
+      }});
+
+      tile.addEventListener("dragend", () => {{
+        tile.classList.remove("dragging");
+        dragFrom = null;
+      }});
+
+      tile.addEventListener("dragover", (e) => {{
+        if (!solved) e.preventDefault();
+      }});
+
+      tile.addEventListener("drop", (e) => {{
+        e.preventDefault();
+        if (solved) return;
+        if (dragFrom === null || dragFrom === boardIndex) return;
+        swapTiles(dragFrom, boardIndex);
+        dragFrom = null;
+      }});
+
+      if (selectedIndex === boardIndex) {{
+        tile.classList.add("selected");
+      }}
+
+      board.appendChild(tile);
+    }});
+  }};
 }}
 
 function onTileClick(boardIndex) {{
