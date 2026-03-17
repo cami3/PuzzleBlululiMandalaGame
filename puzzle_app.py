@@ -60,11 +60,18 @@ if not image_paths:
     st.stop()
 
 IMAGE_TITLES = {
-    "rainbow_mandala": "Rainbow Mandala Energy",
-    "blue_green_floral": "Blue Green Floral Mandala",
-    "vibrant_mandala": "Vibrant Mandala Harmony",
-    "geometric_mandala": "Sacred Geometry Mandala",
+    "web_beige_green_plain_colors": "Beige & Green Mandala Balance",
+    "web_blue_green_pink_plain_colors": "Blue Green Pink Mandala Harmony",
+    "web_green_yellow_purple": "Green Yellow Purple Mandala Energy",
+    "web_green_yellow_purple_plain_colors": "Green Yellow Purple Mandala Spectrum",
+    "web_intricate_rectangular": "Intricate Mandala Geometry",
+    "web_multicolor": "Multicolor Mandala Radiance",
+    "web_multicolor_metallic": "Metallic Multicolor Mandala Glow",
+    "web_orange_yellow": "Orange Yellow Mandala Sunrise",
+    "web_purple": "Purple Mandala Serenity",
+    "web_purple_yellow_red": "Purple Yellow Red Mandala Fire"
 }
+
 def _to_data_uri(path: Path, max_dim: int = 1600, quality: int = 90) -> dict[str, str]:
     with Image.open(path) as src:
         img = src.convert("RGB")
@@ -73,10 +80,14 @@ def _to_data_uri(path: Path, max_dim: int = 1600, quality: int = 90) -> dict[str
         img.save(buf, format="JPEG", quality=quality, optimize=True)
 
     encoded = base64.b64encode(buf.getvalue()).decode("utf-8")
+    name = IMAGE_TITLES.get(
+    path.stem,
+    path.stem.replace("_", " ").replace("-", " ").title()
+)
     return {
-        "name": path.stem.replace("_", " ").replace("-", " ").title(),
-        "url": f"data:image/jpeg;base64,{encoded}",
-    }
+    "name": name,
+    "url": f"data:image/jpeg;base64,{encoded}",
+}
 
 
 assets = [_to_data_uri(p) for p in image_paths]
@@ -649,7 +660,7 @@ components_html = f"""
         <section class="card pad">
           <div class="controls">
             <div class="control">
-              <label class="label" for="imageSelect">Artwork</label>
+              <label class="label" for="imageSelect">Choose a Mandala</label>
               <select id="imageSelect"></select>
               <div class="helper">Select Your Creative Digital Design.</div>
             </div>
