@@ -730,7 +730,7 @@ components_html = f"""
                 </div>
 
                 <div class="overlay-actions">
-                  <a id="shopBtn" target="_top" class="cta-link btn-success">Shop This Design</a>
+                  <a id="shopBtn" target="_blank" rel="noopener noreferrer" class="cta-link btn-success">Shop This Design</a>
                   <button class="btn-primary" id="againBtn">Play Again</button>
                   <button class="btn-secondary" id="closeOverlayBtn">Close</button>
                 </div>
@@ -824,13 +824,6 @@ function safeProductUrl(index) {{
   return products[index] || products[products.length - 1] || "https://blululi.com";
 }}
 
-function openProduct(url){{
-  if (window.top) {{
-    window.top.location.href = url
-  }} else {{
-    window.location.href = url
-  }}
-}}
 
 function populateImages() {{
   imageSelect.innerHTML = "";
@@ -862,7 +855,7 @@ function setPreview() {{
   currentName = images[idx]?.name || "Mandala";
   previewImg.src = currentImage;
   previewName.textContent = currentName;
-  shopBtn.onclick = () => openProduct(safeProductUrl(idx))
+  shopBtn.href = safeProductUrl(idx);
 }}
 
 function resetStats() {{
@@ -1046,8 +1039,7 @@ function checkSolved() {{
   overlayGrid.textContent = `${{grid}}×${{grid}}`;
   overlayCopy.textContent = `You completed “${{currentName}}” in ${{moves}} moves and ${{seconds}} seconds.`;
 
-  shopBtn.onclick = () =>
-  openProduct(safeProductUrl(Number(imageSelect.value || 0)));
+  shopBtn.href = safeProductUrl(Number(imageSelect.value || 0));
   statusPill.textContent = "Completed";
   overlay.classList.add("show");
   pulseVibrate();
