@@ -956,8 +956,8 @@ function piecePosition(pieceId) {{
 
 function renderBoard() {{
   board.innerHTML = "";
-  const size = boardSize();
-  const one = tileSize();
+  // Usiamo le doppie graffe per proteggere il calcolo JS dall'f-string di Python
+  const percentage = 100 * grid;
 
   arrangement.forEach((pieceId, boardIndex) => {{
     const tile = document.createElement("button");
@@ -971,8 +971,15 @@ function renderBoard() {{
     const pos = piecePosition(pieceId);
 
     tile.style.backgroundImage = `url("${{currentImage}}")`;
-    tile.style.backgroundSize = `${{size}}px ${{size}}px`;
-    tile.style.backgroundPosition = `${{-pos.col * one}}px ${{-pos.row * one}}px`;
+    
+    // Mantiene le proporzioni: larghezza scalata sulla griglia, altezza automatica
+    tile.style.backgroundSize = `${{percentage}}% auto`;
+
+    // Formula per le percentuali di posizionamento senza schiacciamento
+    const posX = (pos.col / (grid - 1)) * 100;
+    const posY = (pos.row / (grid - 1)) * 100;
+    
+    tile.style.backgroundPosition = `${{posX}}% ${{posY}}%`;
 
     tile.addEventListener("click", () => onTileClick(boardIndex));
 
