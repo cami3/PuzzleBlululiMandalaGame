@@ -62,14 +62,22 @@ if not image_paths:
 IMAGE_TITLES = {
     "web_beige_green_plain_colors": "Beige & Green Mandala Balance",
     "web_blue_green_pink_plain_colors": "Blue Green Pink Mandala Harmony",
+
     "web_green_yellow_purple": "Green Yellow Purple Mandala Energy",
     "web_green_yellow_purple_plain_colors": "Green Yellow Purple Mandala Spectrum",
+
     "web_intricate_rectangular": "Intricate Mandala Geometry",
+
     "web_multicolor": "Multicolor Mandala Radiance",
     "web_multicolor_metallic": "Metallic Multicolor Mandala Glow",
+
     "web_orange_yellow": "Orange Yellow Mandala Sunrise",
     "web_purple": "Purple Mandala Serenity",
-    "web_purple_yellow_red": "Purple Yellow Red Mandala Fire"
+    "web_purple_yellow_red": "Purple Yellow Red Mandala Fire",
+
+    "web_rectangula_frame2": "Mandala Frame Pattern II",
+    "web_rectangular_frame": "Mandala Frame Pattern I",
+    "web_rectangular_frame3": "Mandala Frame Pattern III",
 }
 
 def _to_data_uri(path: Path, max_dim: int = 1600, quality: int = 90) -> dict[str, str]:
