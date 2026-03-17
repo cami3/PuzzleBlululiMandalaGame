@@ -61,6 +61,7 @@ if not image_paths:
 
 IMAGE_TITLES = {
     "01_web_rectangula_frame2": "Mandala Frame Pattern I",
+    "02_web_IMG_2815.jpg": "Colorful Mandala on Pure Purple Background"
     "web_beige_green_plain_colors": "Beige & Green Mandala Balance",
     "web_blue_green_pink_plain_colors": "Blue Green Pink Mandala Harmony",
 
@@ -103,6 +104,7 @@ assets_json = json.dumps(assets)
 
 products = [
     "https://blululi.com/products/colorful-mandala-tote-bag-vibrant-boho-all-over-print-beach-market-tote",
+    "https://blululi.com/collections/wall-art/products/mandala-art-drawn-by-hand-vertical-framed-poster-mindfulness-yoga-purple-mandala",
     "https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-art-1",
     "https://blululi.com/collections/t-shirts/products/colorful-mandala-geometric-t-shirt",
     "https://blululi.com/collections/t-shirts/products/vibrant-mandala-tee-intricate-art-design",
