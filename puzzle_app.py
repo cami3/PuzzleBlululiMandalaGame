@@ -954,84 +954,69 @@ function piecePosition(pieceId) {{
   return {{ row, col }};
 }}
 
-
 function renderBoard() {{
   board.innerHTML = "";
-
-  // 1. Carichiamo l'immagine per leggerne le proporzioni reali
-  const tempImg = new Image();
-  tempImg.src = currentImage;
   
-  tempImg.onload = function() {{
-    const imgWidth = tempImg.width;
-    const imgHeight = tempImg.height;
+  // 1. Ripristiniamo il puntamento diretto all'immagine corrente
+  // Usiamo le percentuali: funzionano sempre, sia per quadrati che per rettangoli
+  const percentage = 100 * grid;
+
+  arrangement.forEach((pieceId, boardIndex) => {{
+    const tile = document.createElement("button");
+    tile.type = "button";
+    tile.className = "tile" + (solved ? " solved" : "");
+    tile.dataset.boardIndex = String(boardIndex);
+    tile.dataset.pieceId = String(pieceId);
+    tile.draggable = !solved;
+    tile.setAttribute("aria-label", `Puzzle tile ${{boardIndex + 1}}`);
+
+    // Usiamo la funzione originale che hai nel codice
+    const pos = piecePosition(pieceId);
+
+    tile.style.backgroundImage = `url("${{currentImage}}")`;
     
-    // 2. Adattiamo il contenitore (board) alla forma dell'immagine (rettangolare o quadrata)
-    board.style.aspectRatio = `${{imgWidth}} / ${{imgHeight}}`;
+    // Il segreto per non tagliare: background-size 400% (per un 4x4) 
+    // su entrambi i lati. Il tassello prenderà la sua porzione corretta.
+    tile.style.backgroundSize = `${{percentage}}% ${{percentage}}%`;
+
+    // Posizionamento basato sulla griglia (0% - 100%)
+    const posX = (pos.col / (grid - 1)) * 100;
+    const posY = (pos.row / (grid - 1)) * 100;
     
-    // 3. Calcoliamo la dimensione del background in percentuale basata sulla griglia
-    const percentage = 100 * grid;
+    tile.style.backgroundPosition = `${{posX}}% ${{posY}}%`;
 
-    arrangement.forEach((pieceId, boardIndex) => {{
-      const tile = document.createElement("button");
-      tile.type = "button";
-      tile.className = "tile" + (solved ? " solved" : "");
-      tile.dataset.boardIndex = String(boardIndex);
-      tile.dataset.pieceId = String(pieceId);
-      tile.draggable = !solved;
-      tile.setAttribute("aria-label", `Puzzle tile ${{boardIndex + 1}}`);
+    // --- Ricolleghiamo i pezzi per lo SWAP ---
+    tile.addEventListener("click", () => onTileClick(boardIndex));
 
-      // CORRETTO: la funzione si chiama piecePosition (una sola volta "piece")
-      const pos = piecePosition(pieceId);
-
-      tile.style.backgroundImage = `url("${{currentImage}}")`;
-      
-      // Impostiamo il background in modo che copra la griglia senza schiacciarsi
-      tile.style.backgroundSize = `${{percentage}}% ${{percentage}}%`;
-
-      // Posizionamento millimetrico dei tasselli usando le percentuali
-      const posX = (pos.col / (grid - 1)) * 100;
-      const posY = (pos.row / (grid - 1)) * 100;
-      
-      tile.style.backgroundPosition = `${{posX}}% ${{posY}}%`;
-
-      // --- Gestione Eventi (Click e Drag) ---
-      tile.addEventListener("click", () => onTileClick(boardIndex));
-
-      tile.addEventListener("dragstart", () => {{
-        if (solved) return;
-        dragFrom = boardIndex;
-        tile.classList.add("dragging");
-      }});
-
-      tile.addEventListener("dragend", () => {{
-        tile.classList.remove("dragging");
-        dragFrom = null;
-      }});
-
-      tile.addEventListener("dragover", (e) => {{
-        if (!solved) e.preventDefault();
-      }});
-
-      tile.addEventListener("drop", (e) => {{
-        e.preventDefault();
-        if (solved) return;
-        if (dragFrom === null || dragFrom === boardIndex) return;
-        swapTiles(dragFrom, boardIndex);
-        dragFrom = null;
-      }});
-
-      if (selectedIndex === boardIndex) {{
-        tile.classList.add("selected");
-      }}
-
-      board.appendChild(tile);
+    tile.addEventListener("dragstart", () => {{
+      if (solved) return;
+      dragFrom = boardIndex;
+      tile.classList.add("dragging");
     }});
-  }};
 
-  tempImg.onerror = function() {{
-    console.error("Errore caricamento immagine");
-  }};
+    tile.addEventListener("dragend", () => {{
+      tile.classList.remove("dragging");
+      dragFrom = null;
+    }});
+
+    tile.addEventListener("dragover", (e) => {{
+      if (!solved) e.preventDefault();
+    }});
+
+    tile.addEventListener("drop", (e) => {{
+      e.preventDefault();
+      if (solved) return;
+      if (dragFrom === null || dragFrom === boardIndex) return;
+      swapTiles(dragFrom, boardIndex);
+      dragFrom = null;
+    }});
+
+    if (selectedIndex === boardIndex) {{
+      tile.classList.add("selected");
+    }}
+
+    board.appendChild(tile);
+  }});
 }}
 
 function onTileClick(boardIndex) {{
