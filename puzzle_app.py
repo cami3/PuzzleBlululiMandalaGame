@@ -958,17 +958,18 @@ function piecePosition(pieceId) {{
 function renderBoard() {{
   board.innerHTML = "";
 
-  // 1. Dobbiamo conoscere le dimensioni reali dell'immagine 
-  // prima di calcolare la geometria
+  // 1. Carichiamo l'immagine per leggerne le proporzioni reali
   const tempImg = new Image();
   tempImg.src = currentImage;
   
   tempImg.onload = function() {{
     const imgWidth = tempImg.width;
     const imgHeight = tempImg.height;
-    const aspectRatio = imgWidth / imgHeight;
+    
+    // 2. Adattiamo il contenitore (board) alla forma dell'immagine (rettangolare o quadrata)
     board.style.aspectRatio = `${{imgWidth}} / ${{imgHeight}}`;
     
+    // 3. Calcoliamo la dimensione del background in percentuale basata sulla griglia
     const percentage = 100 * grid;
 
     arrangement.forEach((pieceId, boardIndex) => {{
@@ -980,18 +981,21 @@ function renderBoard() {{
       tile.draggable = !solved;
       tile.setAttribute("aria-label", `Puzzle tile ${{boardIndex + 1}}`);
 
-      const pos = piecePiecePosition(pieceId);
+      // CORRETTO: la funzione si chiama piecePosition (una sola volta "piece")
+      const pos = piecePosition(pieceId);
 
       tile.style.backgroundImage = `url("${{currentImage}}")`;
       
+      // Impostiamo il background in modo che copra la griglia senza schiacciarsi
       tile.style.backgroundSize = `${{percentage}}% ${{percentage}}%`;
 
-     
+      // Posizionamento millimetrico dei tasselli usando le percentuali
       const posX = (pos.col / (grid - 1)) * 100;
       const posY = (pos.row / (grid - 1)) * 100;
       
       tile.style.backgroundPosition = `${{posX}}% ${{posY}}%`;
 
+      // --- Gestione Eventi (Click e Drag) ---
       tile.addEventListener("click", () => onTileClick(boardIndex));
 
       tile.addEventListener("dragstart", () => {{
@@ -1024,12 +1028,9 @@ function renderBoard() {{
       board.appendChild(tile);
     }});
   }};
-  
-  // Gestiamo anche l'errore se l'immagine non carica
+
   tempImg.onerror = function() {{
-    console.error("Errore caricamento immagine per geometria board");
-    // Fallback generico per non bloccare tutto
-    tempImg.onload();
+    console.error("Errore caricamento immagine");
   }};
 }}
 
