@@ -102,6 +102,7 @@ assets = [_to_data_uri(p) for p in image_paths]
 assets_json = json.dumps(assets)
 
 products = [
+    "https://blululi.com/products/colorful-mandala-tote-bag-vibrant-boho-all-over-print-beach-market-tote",
     "https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-art-1",
     "https://blululi.com/collections/t-shirts/products/colorful-mandala-geometric-t-shirt",
     "https://blululi.com/collections/t-shirts/products/vibrant-mandala-tee-intricate-art-design",
@@ -113,7 +114,6 @@ products = [
     "https://blululi.com/collections/t-shirts/products/rainbow-mandala-womens-t-shirt-colorful-intricate-1",
     "https://blululi.com/products/one-shoulder-dress-with-hand-drawn-mandala-design-black-with-orange-red-and-gold-accents",
     
-    "https://blululi.com/products/colorful-mandala-tote-bag-vibrant-boho-all-over-print-beach-market-tote",
     "https://blululi.com/collections/kitchen-decor/products/mandala-art-15oz-ceramic-mug-perfect-for-coffee-tea-lovers-2",
     "https://blululi.com/products/colorful-mandala-tote-bag-boho-psychedelic-all-over-print",
 ]
