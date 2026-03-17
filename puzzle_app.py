@@ -954,81 +954,83 @@ function piecePosition(pieceId) {{
   return {{ row, col }};
 }}
 
+
 function renderBoard() {{
   board.innerHTML = "";
-  // Usiamo le doppie graffe per proteggere il calcolo JS dall'f-string di Python
-  const percentage = 100 * grid;
 
-  arrangement.forEach((pieceId, boardIndex) => {{
-    const tile = document.createElement("button");
-    tile.type = "button";
-    tile.className = "tile" + (solved ? " solved" : "");
-    tile.dataset.boardIndex = String(boardIndex);
-    tile.dataset.pieceId = String(pieceId);
-    tile.draggable = !solved;
-    tile.setAttribute("aria-label", `Puzzle tile ${{boardIndex + 1}}`);
-
-    const pos = piecePosition(pieceId);
-
-    tile.style.backgroundImage = `url("${{currentImage}}")`;
+  // 1. Dobbiamo conoscere le dimensioni reali dell'immagine 
+  // prima di calcolare la geometria
+  const tempImg = new Image();
+  tempImg.src = currentImage;
+  
+  tempImg.onload = function() {{
+    const imgWidth = tempImg.width;
+    const imgHeight = tempImg.height;
+    const aspectRatio = imgWidth / imgHeight;
+    board.style.aspectRatio = `${{imgWidth}} / ${{imgHeight}}`;
     
-    // Mantiene le proporzioni: larghezza scalata sulla griglia, altezza automatica
-    tile.style.backgroundSize = `${{percentage}}% auto`;
+    const percentage = 100 * grid;
 
-    // Formula per le percentuali di posizionamento senza schiacciamento
-    const posX = (pos.col / (grid - 1)) * 100;
-    const posY = (pos.row / (grid - 1)) * 100;
-    
-    tile.style.backgroundPosition = `${{posX}}% ${{posY}}%`;
+    arrangement.forEach((pieceId, boardIndex) => {{
+      const tile = document.createElement("button");
+      tile.type = "button";
+      tile.className = "tile" + (solved ? " solved" : "");
+      tile.dataset.boardIndex = String(boardIndex);
+      tile.dataset.pieceId = String(pieceId);
+      tile.draggable = !solved;
+      tile.setAttribute("aria-label", `Puzzle tile ${{boardIndex + 1}}`);
 
-    tile.addEventListener("click", () => onTileClick(boardIndex));
+      const pos = piecePiecePosition(pieceId);
 
-    tile.addEventListener("dragstart", () => {{
-      if (solved) return;
-      dragFrom = boardIndex;
-      tile.classList.add("dragging");
+      tile.style.backgroundImage = `url("${{currentImage}}")`;
+      
+      tile.style.backgroundSize = `${{percentage}}% ${{percentage}}%`;
+
+     
+      const posX = (pos.col / (grid - 1)) * 100;
+      const posY = (pos.row / (grid - 1)) * 100;
+      
+      tile.style.backgroundPosition = `${{posX}}% ${{posY}}%`;
+
+      tile.addEventListener("click", () => onTileClick(boardIndex));
+
+      tile.addEventListener("dragstart", () => {{
+        if (solved) return;
+        dragFrom = boardIndex;
+        tile.classList.add("dragging");
+      }});
+
+      tile.addEventListener("dragend", () => {{
+        tile.classList.remove("dragging");
+        dragFrom = null;
+      }});
+
+      tile.addEventListener("dragover", (e) => {{
+        if (!solved) e.preventDefault();
+      }});
+
+      tile.addEventListener("drop", (e) => {{
+        e.preventDefault();
+        if (solved) return;
+        if (dragFrom === null || dragFrom === boardIndex) return;
+        swapTiles(dragFrom, boardIndex);
+        dragFrom = null;
+      }});
+
+      if (selectedIndex === boardIndex) {{
+        tile.classList.add("selected");
+      }}
+
+      board.appendChild(tile);
     }});
-
-    tile.addEventListener("dragend", () => {{
-      tile.classList.remove("dragging");
-      dragFrom = null;
-    }});
-
-    tile.addEventListener("dragover", (e) => {{
-      if (!solved) e.preventDefault();
-    }});
-
-    tile.addEventListener("drop", (e) => {{
-      e.preventDefault();
-      if (solved) return;
-      if (dragFrom === null || dragFrom === boardIndex) return;
-      swapTiles(dragFrom, boardIndex);
-      dragFrom = null;
-    }});
-
-    if (selectedIndex === boardIndex) {{
-      tile.classList.add("selected");
-    }}
-
-    board.appendChild(tile);
-  }});
-}}
-
-function pulseVibrate() {{
-  if (navigator.vibrate) navigator.vibrate(8);
-}}
-
-function swapTiles(a, b) {{
-  if (a === b || solved) return;
-  [arrangement[a], arrangement[b]] = [arrangement[b], arrangement[a]];
-  moves += 1;
-  movesEl.textContent = String(moves);
-  selectedIndex = null;
-  pulseVibrate();
-  requestAnimationFrame(() => {{
-    renderBoard();
-    checkSolved();
-  }});
+  }};
+  
+  // Gestiamo anche l'errore se l'immagine non carica
+  tempImg.onerror = function() {{
+    console.error("Errore caricamento immagine per geometria board");
+    // Fallback generico per non bloccare tutto
+    tempImg.onload();
+  }};
 }}
 
 function onTileClick(boardIndex) {{
