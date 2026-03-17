@@ -59,7 +59,12 @@ if not image_paths:
     st.error("No images found inside ./images")
     st.stop()
 
-
+IMAGE_TITLES = {
+    "rainbow_mandala": "Rainbow Mandala Energy",
+    "blue_green_floral": "Blue Green Floral Mandala",
+    "vibrant_mandala": "Vibrant Mandala Harmony",
+    "geometric_mandala": "Sacred Geometry Mandala",
+}
 def _to_data_uri(path: Path, max_dim: int = 1600, quality: int = 90) -> dict[str, str]:
     with Image.open(path) as src:
         img = src.convert("RGB")
@@ -609,10 +614,10 @@ components_html = f"""
     .card, .board-card {{ border-radius: 16px; }}
   }}
 
-  @media (max-width: 560px) {{
+  @media (max-width: 700px) {{
     .shell {{ padding: 8px; gap: 8px; }}
     .pad, .hero, .board-card {{ padding: 12px; }}
-    #board {{ width: 100%; max-width: none; border-radius: 14px; }}
+    #board {{ width: 100%; max-width: 95vw; border-radius: 14px; }}
     .tile {{ border-radius: 3px; }}
     .status-row, .overlay-stats {{ grid-template-columns: 1fr 1fr; }}
     .overlay-box {{ padding: 18px; }}
