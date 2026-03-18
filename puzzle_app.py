@@ -577,7 +577,10 @@ def main() -> None:
     if st.session_state.puzzle is None:
         st.info("Premi Start per iniziare il puzzle. Se le immagini sono locali, mettile nella cartella `assets/`.")
     else:
-        render_game_board()
+        render_real_puzzle(
+    image_url="https://tuo-cdn.com/web_purple.jpg",
+    grid=3
+)
 
 
 
