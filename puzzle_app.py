@@ -217,7 +217,7 @@ function swap(i){{
 function check(){{
   if(arr.every((v,i)=>v===i)){{
     overlay.style.display="flex";
-    resultText.innerText=`Solved in ${moves} moves`;
+    resultText.innerText=`Solved in ${{moves}} moves`;
 
     shopBtn.href = images[current].product + "?utm_source=puzzle";
   }}
