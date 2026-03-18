@@ -460,207 +460,107 @@ def render_preview_and_stats(image_key: str, grid_size: int) -> None:
         st.write(f"Grid corrente: **{grid_size}x{grid_size}**")
         st.markdown("</div>", unsafe_allow_html=True)
 
+import streamlit.components.v1 as components
 
-def render_game_board() -> None:
-    puzzle: PuzzleState = st.session_state.puzzle
-    tiles_img = get_tiles_for_current_puzzle()
+def render_real_puzzle(image_url, grid=3):
+    html = f"""
+    <style>
+    #puzzle-container {{
+        width: 100%;
+        max-width: 500px;
+        margin: auto;
+    }}
+    canvas {{
+        width: 100%;
+        border-radius: 16px;
+        cursor: grab;
+    }}
+    </style>
 
-    st.markdown('<div class="section-title">2. Risolvi il puzzle</div>', unsafe_allow_html=True)
+    <div id="puzzle-container">
+        <canvas id="puzzleCanvas"></canvas>
+    </div>
 
-    top_left, top_mid, top_right = st.columns([1.2, 1, 1])
-    with top_left:
-        st.markdown(
-            f"""
-            <div class="glass">
-                <div><strong>Artwork:</strong> {IMAGE_TITLES[puzzle.image_key]}</div>
-                <div class="small-note">Seleziona una tessera e poi un'altra per scambiarle.</div>
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-    with top_mid:
-        st.metric("Moves", puzzle.moves)
-    with top_right:
-        percent = int(progress_ratio(puzzle) * 100)
-        st.metric("Completamento", f"{percent}%")
+    <script>
+    const canvas = document.getElementById("puzzleCanvas");
+    const ctx = canvas.getContext("2d");
 
-    st.progress(progress_ratio(puzzle))
+    const gridSize = {grid};
+    let pieces = [];
+    let selected = null;
 
-    controls1, controls2, controls3, controls4 = st.columns(4)
-    with controls1:
-        if st.button("💡 Hint", use_container_width=True):
-            auto_place_one_tile(puzzle)
-            if puzzle.solved:
-                st.balloons()
-            st.rerun()
-    with controls2:
-        if st.button("🔀 Reshuffle", use_container_width=True):
-            start_new_game(puzzle.image_key, puzzle.grid_size)
-            st.rerun()
-    with controls3:
-        if st.button("👁️ Toggle Preview", use_container_width=True):
-            st.session_state.show_preview = not st.session_state.show_preview
-            st.rerun()
-    with controls4:
-        if st.button("✅ Solve Demo", use_container_width=True):
-            puzzle.tiles = list(range(len(puzzle.tiles)))
-            puzzle.solved = True
-            st.balloons()
-            st.rerun()
+    const img = new Image();
+    img.src = "{image_url}";
 
-    game_col, preview_col = st.columns([1.35, 0.9])
+    img.onload = () => {{
+        canvas.width = img.width;
+        canvas.height = img.height;
 
-    with game_col:
-        st.markdown('<div class="glass">', unsafe_allow_html=True)
-        cols_per_row = puzzle.grid_size
-        index = 0
-        for _ in range(puzzle.grid_size):
-            row_cols = st.columns(cols_per_row, gap="small")
-            for col in row_cols:
-                tile_id = puzzle.tiles[index]
-                with col:
-                    st.image(
-                        tiles_img[tile_id],
-                        use_container_width=True,
-                        clamp=True,
-                    )
-                    btn_label = f"Tile {index + 1}"
-                    if st.button(btn_label, key=f"tile_btn_{index}", use_container_width=True):
-                        if puzzle.selected_idx is None:
-                            puzzle.selected_idx = index
-                        else:
-                            if puzzle.selected_idx != index:
-                                swap_tiles(puzzle, puzzle.selected_idx, index)
-                                if puzzle.solved:
-                                    st.balloons()
-                            else:
-                                puzzle.selected_idx = None
-                        st.rerun()
-                    st.markdown(
-                        f'<div class="tile-label">{tile_caption(index, puzzle.selected_idx)}</div>',
-                        unsafe_allow_html=True,
-                    )
-                index += 1
-        st.markdown("</div>", unsafe_allow_html=True)
+        const pieceW = img.width / gridSize;
+        const pieceH = img.height / gridSize;
 
-    with preview_col:
-        st.markdown('<div class="glass">', unsafe_allow_html=True)
-        st.markdown("### Preview di riferimento")
-        if st.session_state.show_preview:
-            st.image(crop_square(load_image(puzzle.image_key)), use_container_width=True)
-        else:
-            st.info("Preview nascosta. Ottimo per aumentare la sfida e il focus.")
-        st.markdown(
-            f"""
-            <div class="small-note">
-                Hint usati: {puzzle.hints_used}<br>
-                Difficoltà: {puzzle.grid_size}x{puzzle.grid_size}
-            </div>
-            """,
-            unsafe_allow_html=True,
-        )
-        st.markdown("</div>", unsafe_allow_html=True)
+        for (let y = 0; y < gridSize; y++) {{
+            for (let x = 0; x < gridSize; x++) {{
+                pieces.push({{
+                    x: x,
+                    y: y,
+                    correctX: x,
+                    correctY: y
+                }});
+            }}
+        }}
 
+        shuffle(pieces);
+        draw();
+    }};
 
-def render_conversion_section() -> None:
-    puzzle: PuzzleState = st.session_state.puzzle
-    if not puzzle.solved:
-        return
+    function shuffle(array) {{
+        for (let i = array.length - 1; i > 0; i--) {{
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }}
+    }}
 
-    st.markdown('<div class="section-title">3. Reward + conversione prodotto</div>', unsafe_allow_html=True)
+    function draw() {{
+        const pieceW = canvas.width / gridSize;
+        const pieceH = canvas.height / gridSize;
 
-    recommendations = get_product_recommendations(puzzle.image_key, max_items=3)
-    primary = recommendations[0]
+        pieces.forEach((p, i) => {{
+            const sx = p.correctX * pieceW;
+            const sy = p.correctY * pieceH;
 
-    st.success("Puzzle completato. Questo è il momento perfetto per mostrare il prodotto collegato al design appena ricostruito.")
+            const dx = (i % gridSize) * pieceW;
+            const dy = Math.floor(i / gridSize) * pieceH;
 
-    hero_left, hero_right = st.columns([1.15, 0.85])
-    with hero_left:
-        st.markdown('<div class="glass">', unsafe_allow_html=True)
-        st.markdown(f"### Hai sbloccato: {IMAGE_TITLES[puzzle.image_key]}")
-        st.write(
-            "L'utente ha appena investito attenzione sul pattern. Ora il CTA ha molto più senso perché il design è già diventato memorabile."
-        )
-        st.markdown(
-            f'<a class="cta" href="{primary}" target="_blank">🛍️ Scopri il prodotto abbinato</a>',
-            unsafe_allow_html=True,
-        )
-        st.markdown("<div style='height:.8rem'></div>", unsafe_allow_html=True)
-        st.caption("Suggerimento CRO: mostra un micro-copy di reward come ‘Hai completato il design — ora indossalo / portalo con te’. ")
-        st.markdown("</div>", unsafe_allow_html=True)
+            ctx.drawImage(img, sx, sy, pieceW, pieceH, dx, dy, pieceW, pieceH);
+        }});
+    }}
 
-    with hero_right:
-        st.markdown('<div class="glass">', unsafe_allow_html=True)
-        st.markdown("### Perché converte meglio")
-        st.markdown(
-            """
-            - forte continuità tra gioco e shopping
-            - CTA basata su un'immagine appena vista e ricomposta
-            - picco emotivo subito dopo il completamento
-            - possibilità di cross-sell con prodotti affini
-            """
-        )
-        st.markdown("</div>", unsafe_allow_html=True)
+    canvas.addEventListener("click", (e) => {{
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
-    st.markdown("#### Prodotti consigliati")
-    cols = st.columns(3)
-    card_text = [
-        "Best match diretto con l'artwork appena completato.",
-        "Seconda opzione per utenti che preferiscono una categoria diversa.",
-        "Cross-sell leggero per aumentare il valore medio dell'esperienza.",
-    ]
-    for idx, (col, url) in enumerate(zip(cols, recommendations)):
-        with col:
-            st.markdown(
-                f"""
-                <div class="product-card">
-                    <div class="product-title">{pretty_slug(url)}</div>
-                    <div class="product-copy">{card_text[idx]}</div>
-                    <a class="cta" href="{url}" target="_blank">Apri prodotto</a>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
+        const pieceW = canvas.width / gridSize;
+        const pieceH = canvas.height / gridSize;
 
+        const col = Math.floor(x / pieceW);
+        const row = Math.floor(y / pieceH);
 
-def render_dev_notes() -> None:
-    with st.expander("Note tecniche / implementazione"):
-        st.markdown(
-            textwrap.dedent(
-                """
-                ### Architettura consigliata
+        const index = row * gridSize + col;
 
-                - `assets/` contiene le immagini con il nome esatto della chiave (`web_purple.jpg`, `web_multicolor.png`, ecc.)
-                - `app.py` contiene logica UI, stato del puzzle, split delle immagini e CTA prodotto
-                - mapping `IMAGE_PRODUCT_MAP` collega ogni artwork a una URL principale di conversione
-
-                ### Migliorie ad alto impatto
-
-                1. **Tracking eventi**
-                   - `puzzle_started`
-                   - `hint_used`
-                   - `puzzle_completed`
-                   - `product_cta_clicked`
-
-                2. **Reward reale**
-                   - codice sconto dopo il completamento
-                   - accesso a una collezione dedicata
-                   - meccanica “completa 3 puzzle e sblocca bundle”
-
-                3. **Ottimizzazioni UX**
-                   - timer soft opzionale
-                   - animazione di completamento
-                   - progress state persistente per sessione
-                   - pagina mobile-first con immagini compresse
-
-                4. **Per produzione**
-                   - aggiungi analytics (GA4 / Meta Pixel / PostHog)
-                   - usa CDN o immagini ottimizzate
-                   - collega il CTA a UTM diversi per artwork e difficulty
-                   - A/B test tra `Solve + CTA diretto` e `Solve + coupon + CTA`
-                """
-            )
-        )
+        if (selected === null) {{
+            selected = index;
+        }} else {{
+            [pieces[selected], pieces[index]] = [pieces[index], pieces[selected]];
+            selected = null;
+            ctx.clearRect(0,0,canvas.width,canvas.height);
+            draw();
+        }}
+    }});
+    </script>
+    """
+    components.html(html, height=520)
 
 
 # =========================
@@ -678,9 +578,7 @@ def main() -> None:
         st.info("Premi Start per iniziare il puzzle. Se le immagini sono locali, mettile nella cartella `assets/`.")
     else:
         render_game_board()
-        render_conversion_section()
 
-    render_dev_notes()
 
 
 if __name__ == "__main__":
