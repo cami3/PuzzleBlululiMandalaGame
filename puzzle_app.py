@@ -158,12 +158,12 @@ let moves = 0;
 let current = 0;
 
 // populate select
-images.forEach((img,i)=>{
+images.forEach((img,i)=>{{
   let opt=document.createElement("option");
   opt.value=i;
   opt.textContent=img.name;
   select.appendChild(opt);
-});
+}});
 
 function shuffle(a){{
   for(let i=a.length-1;i>0;i--){{
