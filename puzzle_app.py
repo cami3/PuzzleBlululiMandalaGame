@@ -23,7 +23,7 @@ IMAGE_TITLES = {
     "web_orange_yellow": "Orange Yellow Mandala Sunrise",
 }
 
-ASSETS_DIR = Path("assets")
+ASSETS_DIR = Path("images")
 GRID_OPTIONS = [3, 4, 5]
 
 # =========================
