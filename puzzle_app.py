@@ -191,7 +191,7 @@ function render(){{
     let row=Math.floor(val/grid);
     let col=val%grid;
 
-    d.style.backgroundImage=`url(${images[current].url})`;
+    d.style.backgroundImage=`url(${{images[current].url}})`;
     d.style.backgroundPosition=`${{-col*100}}% ${{-row*100}}%`;
     d.style.height="100px";
 
