@@ -53,7 +53,7 @@ products = [
 ]
 
 IMAGE_PRODUCT_MAP = {key: url for key, url in zip(IMAGE_TITLES.keys(), products)}
-ASSETS_DIR = Path("assets")
+ASSETS_DIR = Path("images")
 SUPPORTED_EXTENSIONS = [".jpg", ".jpeg", ".png", ".webp"]
 
 # =========================
