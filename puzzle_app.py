@@ -7,7 +7,7 @@ st.set_page_config(layout="wide")
 
 GRID = 4  # molto meglio 4x4
 
-IMAGE_PATH = "assets/web_purple.jpg"
+IMAGE_PATH = "images/web_purple.jpg"
 
 
 # =====================
