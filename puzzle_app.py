@@ -182,7 +182,7 @@ function newGame(){{
 
 function render(){{
   board.innerHTML="";
-  board.style.gridTemplateColumns = `repeat(${grid},1fr)`;
+  board.style.gridTemplateColumns = `repeat(${{grid}},1fr)`;
 
   arr.forEach((val,i)=>{{
     let d=document.createElement("div");
@@ -192,7 +192,7 @@ function render(){{
     let col=val%grid;
 
     d.style.backgroundImage=`url(${images[current].url})`;
-    d.style.backgroundPosition=`${-col*100}% ${-row*100}%`;
+    d.style.backgroundPosition=`${{-col*100}}% ${{-row*100}}%`;
     d.style.height="100px";
 
     d.onclick=()=>swap(i);
