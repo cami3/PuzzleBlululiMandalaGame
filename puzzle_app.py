@@ -1012,19 +1012,19 @@ function makeArrangement() {{
 
 function render() {{
   board.innerHTML = ""
-  board.style.gridTemplateColumns = `repeat(${grid},1fr)`
+  board.style.gridTemplateColumns = `repeat(${{grid}},1fr)`
 
   arrangement.forEach((piece, i) => {{
     const tile = document.createElement("div")
     tile.className = "tile"
 
-    tile.style.backgroundImage = `url(${currentImage})`
+    tile.style.backgroundImage = `url(${{currentImage}})`
 
     const row = Math.floor(piece / grid)
     const col = piece % grid
 
-    tile.style.backgroundSize = `${grid*100}% ${grid*100}%`
-    tile.style.backgroundPosition = `${col/(grid-1)*100}% ${row/(grid-1)*100}%`
+    tile.style.backgroundSize = `${{grid*100}}% ${{grid*100}}%`
+    tile.style.backgroundPosition = `${{col/(grid-1)*100}}% ${{row/(grid-1)*100}}%`
 
     tile.onclick = () => swap(i)
 
